@@ -641,7 +641,7 @@ Yamashita champions the blurring of silos between design, PMs, and engineers: co
             className="cursor-pointer text-blue-600 hover:text-blue-800 underline decoration-dotted"
             onClick={() => handleWordClick(cleanWord)}
           >
-            {word}
+            {word}{' '}
           </span>
         )
       }
