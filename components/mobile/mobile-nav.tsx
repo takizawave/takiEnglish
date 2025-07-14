@@ -24,9 +24,9 @@ interface MobileNavProps {
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: TrendingUp },
   { id: "article", label: "Article Processor", icon: FileText },
-
-  { id: "lint", label: "Grammar Lint", icon: MessageSquare },
   { id: "vocab", label: "Vocabulary", icon: BookOpen },
+  { id: "grammar", label: "Grammar", icon: BookOpen },
+  { id: "lint", label: "Grammar Lint", icon: MessageSquare },
   { id: "review", label: "Review", icon: Clock },
   { id: "logs", label: "Build Logs", icon: GitBranch },
   { id: "progress", label: "Progress", icon: TrendingUp },

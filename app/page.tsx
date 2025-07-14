@@ -22,6 +22,7 @@ import { InteractiveReading } from "@/components/learning-materials/interactive-
 import { PronunciationTrainer } from "@/components/learning-materials/pronunciation-trainer"
 import { WritingAssistant } from "@/components/learning-materials/writing-assistant"
 import { TextToSpeech } from "@/components/ui/text-to-speech"
+import { ComprehensiveGrammar } from "@/components/learning-materials/comprehensive-grammar"
 
 export default function LearningPlatformMobile() {
   const [activeTab, setActiveTab] = useState("dashboard")
@@ -62,6 +63,10 @@ export default function LearningPlatformMobile() {
 
                 <TabsContent value="vocab" className="mt-0">
                   <VocabularyManager />
+                </TabsContent>
+
+                <TabsContent value="grammar" className="mt-0">
+                  <ComprehensiveGrammar />
                 </TabsContent>
 
                 <TabsContent value="reading" className="mt-0">
@@ -124,6 +129,10 @@ export default function LearningPlatformMobile() {
 
             <TabsContent value="vocab">
               <MobileVocabularyManager />
+            </TabsContent>
+
+            <TabsContent value="grammar">
+              <ComprehensiveGrammar />
             </TabsContent>
 
             <TabsContent value="reading">

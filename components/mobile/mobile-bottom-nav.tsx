@@ -12,8 +12,8 @@ interface MobileBottomNavProps {
 const mainNavItems = [
   { id: "dashboard", label: "Home", icon: TrendingUp },
   { id: "article", label: "Article", icon: FileText },
-
   { id: "vocab", label: "Vocab", icon: BookOpen },
+  { id: "grammar", label: "Grammar", icon: BookOpen },
 ]
 
 const moreNavItems = [
@@ -32,7 +32,7 @@ export function MobileBottomNav({ activeTab, onTabChange }: MobileBottomNavProps
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t md:hidden z-40">
-      <div className="grid grid-cols-5 h-16">
+      <div className="grid grid-cols-4 h-16">
         {mainNavItems.map((item) => {
           const Icon = item.icon
           const isActive = activeTab === item.id
