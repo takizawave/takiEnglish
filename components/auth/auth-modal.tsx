@@ -78,7 +78,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Welcome to Learning Platform v0.91</DialogTitle>
+          <DialogTitle>Welcome to Atomic Language v0.91</DialogTitle>
           <DialogDescription>Sign in to your account or create a new one to get started.</DialogDescription>
         </DialogHeader>
 

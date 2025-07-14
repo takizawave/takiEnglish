@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { BookOpen, Eye, CheckCircle, XCircle, Volume2, Target } from "lucide-react"
+import { BookOpen, Eye, CheckCircle, XCircle, Volume2, VolumeX, Target } from "lucide-react"
 
 interface WordDefinition {
   word: string
@@ -40,6 +40,9 @@ export function InteractiveReading() {
   const [userAnswers, setUserAnswers] = useState<number[]>([])
   const [showResults, setShowResults] = useState(false)
   const [selectedPassage, setSelectedPassage] = useState<ReadingPassage | null>(null)
+  const [isReading, setIsReading] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
+  const [activeTab, setActiveTab] = useState("reading")
 
   const samplePassage: ReadingPassage = {
     id: "1",
@@ -608,7 +611,899 @@ Yamashita champions the blurring of silos between design, PMs, and engineers: co
     ]
   }
 
-  const readingPassages: ReadingPassage[] = [samplePassage]
+  const karriPassage: ReadingPassage = {
+    id: "2",
+    title: "Karri Saarinen's 10 Rules for Crafting Products That Stand Out",
+    content: `Karri Saarinen, CEO and Co-founder of Linear
+
+As CEO and Co-founder of software development platform Linear, Karri has built his success by making impenetrable quality his differentiator in a crowded startup market. His approach offers an alternative to the Zuckerberg "move fast and break things" mantra, which may have worked years ago but no longer resonates in today's more mature, design-conscious market.
+
+This focus on craft solved what Karri calls a startup's biggest challenge: getting people to notice and care. For Linear, the solution was to lean into craft. "We started with quality," says Karri. "Then we learned that people actually noticed, because it's a rare approach—especially for startups."
+
+Here are Karri's 10 rules for building with craft:
+
+1. Commit to quality at the leadership level
+2. When it comes to building teams, go small and aim high
+3. Do away with handoff
+4. Resist creating specialized product teams
+5. Consider the spec your baseline minimum viable product, not your goal
+6. Quality is not perfection
+7. The best design is opinionated
+8. The simplest way to increase quality is to reduce scope
+9. Don't get locked into one way of doing things
+10. Data can be a crutch
+
+To provide the best experience, you must surprise users. You can't expect data—or even people themselves—to tell you how. Success depends on hiring people who care about the craft and can make informed decisions based on their expertise.`,
+    difficulty: "advanced",
+    wordCount: 420,
+    estimatedTime: 12,
+    vocabulary: [
+        {
+          word: "impenetrable",
+          definition: "Impossible to pass through or enter; impossible to understand",
+          pronunciation: "/ɪmˈpenɪtrəbəl/",
+          example: "Making impenetrable quality his differentiator in a crowded startup market",
+          difficulty: "advanced"
+        },
+        {
+          word: "differentiator",
+          definition: "A factor that distinguishes one product or service from others",
+          pronunciation: "/ˌdɪfəˈrenʃieɪtər/",
+          example: "Making impenetrable quality his differentiator in a crowded startup market",
+          difficulty: "advanced"
+        },
+        {
+          word: "mantra",
+          definition: "A statement or slogan repeated frequently",
+          pronunciation: "/ˈmæntrə/",
+          example: "An alternative to the Zuckerberg 'move fast and break things' mantra",
+          difficulty: "intermediate"
+        },
+        {
+          word: "resonates",
+          definition: "Evokes a feeling of shared emotion or belief",
+          pronunciation: "/ˈrezəneɪts/",
+          example: "Which may have worked years ago but no longer resonates in today's market",
+          difficulty: "intermediate"
+        },
+        {
+          word: "deliberation",
+          definition: "Long and careful consideration or discussion",
+          pronunciation: "/dɪˌlɪbəˈreɪʃən/",
+          example: "The more opinions and deliberation you introduce, which dilutes the quality",
+          difficulty: "advanced"
+        },
+        {
+          word: "silos",
+          definition: "Isolated departments or groups within an organization",
+          pronunciation: "/ˈsaɪloʊz/",
+          example: "An over-specialized team creates silos",
+          difficulty: "intermediate"
+        },
+        {
+          word: "opinionated",
+          definition: "Having strong, definite views and expressing them readily",
+          pronunciation: "/əˈpɪnjəneɪtɪd/",
+          example: "The best design is opinionated",
+          difficulty: "advanced"
+        },
+        {
+          word: "crutch",
+          definition: "Something used as a support or aid, often excessively",
+          pronunciation: "/krʌtʃ/",
+          example: "Data can be a crutch",
+          difficulty: "intermediate"
+        },
+        {
+          word: "intuition",
+          definition: "The ability to understand something instinctively",
+          pronunciation: "/ˌɪntuˈɪʃən/",
+          example: "You must develop and trust your intuition",
+          difficulty: "advanced"
+        },
+        {
+          word: "iterate",
+          definition: "Perform or utter repeatedly; make repeated versions",
+          pronunciation: "/ˈɪtəreɪt/",
+          example: "Start with something rough and iterate toward polished craft",
+          difficulty: "intermediate"
+        },
+        {
+          word: "craft",
+          definition: "Skill in making things by hand; expertise in a particular field",
+          pronunciation: "/kræft/",
+          example: "Building with craft",
+          difficulty: "intermediate"
+        },
+        {
+          word: "quality",
+          definition: "The standard of something as measured against other things of a similar kind",
+          pronunciation: "/ˈkwɒləti/",
+          example: "Making quality his differentiator",
+          difficulty: "intermediate"
+        },
+        {
+          word: "startup",
+          definition: "A newly established business",
+          pronunciation: "/ˈstɑːtʌp/",
+          example: "A startup's biggest challenge",
+          difficulty: "intermediate"
+        },
+        {
+          word: "leadership",
+          definition: "The action of leading a group of people or an organization",
+          pronunciation: "/ˈliːdəʃɪp/",
+          example: "Commit to quality at the leadership level",
+          difficulty: "intermediate"
+        },
+        {
+          word: "culture",
+          definition: "The ideas, customs, and social behavior of a particular people or society",
+          pronunciation: "/ˈkʌltʃər/",
+          example: "Build a culture of quality",
+          difficulty: "intermediate"
+        },
+        {
+          word: "buy-in",
+          definition: "Agreement to support a decision or plan",
+          pronunciation: "/ˈbaɪɪn/",
+          example: "You need buy-in from the top",
+          difficulty: "intermediate"
+        },
+        {
+          word: "priority",
+          definition: "A thing that is regarded as more important than another",
+          pronunciation: "/praɪˈɒrəti/",
+          example: "Craft is the most important priority",
+          difficulty: "intermediate"
+        },
+        {
+          word: "permission",
+          definition: "Consent or authorization to do something",
+          pronunciation: "/pəˈmɪʃən/",
+          example: "Creates a permission structure",
+          difficulty: "intermediate"
+        },
+        {
+          word: "structure",
+          definition: "The arrangement of and relations between the parts or elements of something",
+          pronunciation: "/ˈstrʌktʃər/",
+          example: "Permission structure to build craft",
+          difficulty: "intermediate"
+        },
+        {
+          word: "execution",
+          definition: "The carrying out or putting into effect of a plan, order, or course of action",
+          pronunciation: "/ˌeksɪˈkjuːʃən/",
+          example: "Dilutes the quality of the execution",
+          difficulty: "intermediate"
+        },
+        {
+          word: "oriented",
+          definition: "Directed towards or interested in a particular thing",
+          pronunciation: "/ˈɔːrientɪd/",
+          example: "Hire craft-oriented people",
+          difficulty: "intermediate"
+        },
+        {
+          word: "handoff",
+          definition: "The transfer of responsibility for something from one person to another",
+          pronunciation: "/ˈhændɒf/",
+          example: "There's no 'handoff to dev'",
+          difficulty: "intermediate"
+        },
+        {
+          word: "connected",
+          definition: "Joined together or linked",
+          pronunciation: "/kəˈnektɪd/",
+          example: "We have connected teams",
+          difficulty: "intermediate"
+        },
+        {
+          word: "responsible",
+          definition: "Having an obligation to do something, or having control over or care for someone",
+          pronunciation: "/rɪˈspɒnsəbəl/",
+          example: "Everyone is responsible for the quality",
+          difficulty: "intermediate"
+        },
+        {
+          word: "specialized",
+          definition: "Requiring or involving detailed and specific knowledge or training",
+          pronunciation: "/ˈspeʃəlaɪzd/",
+          example: "An over-specialized team",
+          difficulty: "intermediate"
+        },
+        {
+          word: "artificial",
+          definition: "Made or produced by human beings rather than occurring naturally",
+          pronunciation: "/ˌɑːtɪˈfɪʃəl/",
+          example: "Artificial quality and culture silos",
+          difficulty: "intermediate"
+        },
+        {
+          word: "rotate",
+          definition: "Move or cause to move in a circle round an axis or center",
+          pronunciation: "/rəʊˈteɪt/",
+          example: "We rotate responsibilities",
+          difficulty: "intermediate"
+        },
+        {
+          word: "responsibilities",
+          definition: "A thing which one is required to do as part of a job, role, or legal obligation",
+          pronunciation: "/rɪˌspɒnsəˈbɪləti/",
+          example: "Rotate responsibilities to keep ideas fresh",
+          difficulty: "intermediate"
+        },
+        {
+          word: "baseline",
+          definition: "A minimum or starting point used for comparisons",
+          pronunciation: "/ˈbeɪslaɪn/",
+          example: "Consider the spec your baseline",
+          difficulty: "intermediate"
+        },
+        {
+          word: "minimum",
+          definition: "The least or smallest amount or quantity possible",
+          pronunciation: "/ˈmɪnɪməm/",
+          example: "Baseline minimum viable product",
+          difficulty: "intermediate"
+        },
+        {
+          word: "viable",
+          definition: "Capable of working successfully; feasible",
+          pronunciation: "/ˈvaɪəbəl/",
+          example: "Minimum viable product",
+          difficulty: "intermediate"
+        },
+        {
+          word: "competitors",
+          definition: "A person or organization competing with others for the same objective",
+          pronunciation: "/kəmˈpetɪtəz/",
+          example: "High quality competitors",
+          difficulty: "intermediate"
+        },
+        {
+          word: "excellence",
+          definition: "The quality of being outstanding or extremely good",
+          pronunciation: "/ˈeksələns/",
+          example: "Requires excellence to stand out",
+          difficulty: "intermediate"
+        },
+        {
+          word: "stand out",
+          definition: "Be clearly better or more important than others",
+          pronunciation: "/stænd aʊt/",
+          example: "Requires excellence to stand out",
+          difficulty: "intermediate"
+        },
+        {
+          word: "necessary",
+          definition: "Required to be done, achieved, or present; needed; essential",
+          pronunciation: "/ˈnesəsəri/",
+          example: "More care into it than necessary",
+          difficulty: "intermediate"
+        },
+        {
+          word: "finish line",
+          definition: "A line marking the end of a race",
+          pronunciation: "/ˈfɪnɪʃ laɪn/",
+          example: "Not the finish line",
+          difficulty: "intermediate"
+        },
+        {
+          word: "perfection",
+          definition: "The condition, state, or quality of being free or as free as possible from all flaws or defects",
+          pronunciation: "/pəˈfekʃən/",
+          example: "Quality is not perfection",
+          difficulty: "intermediate"
+        },
+        {
+          word: "details",
+          definition: "An individual feature, fact, or item",
+          pronunciation: "/ˈdiːteɪlz/",
+          example: "All of a product's details",
+          difficulty: "intermediate"
+        },
+        {
+          word: "release",
+          definition: "Allow or enable to escape from confinement; set free",
+          pronunciation: "/rɪˈliːs/",
+          example: "Before public release",
+          difficulty: "intermediate"
+        },
+        {
+          word: "rough",
+          definition: "Having an uneven or irregular surface; not smooth or level",
+          pronunciation: "/rʌf/",
+          example: "Start with something rough",
+          difficulty: "intermediate"
+        },
+        {
+          word: "polished",
+          definition: "Refined, sophisticated, or elegant",
+          pronunciation: "/ˈpɒlɪʃt/",
+          example: "Iterate toward polished craft",
+          difficulty: "intermediate"
+        },
+        {
+          word: "bar",
+          definition: "A long rigid piece of wood, metal, or similar material",
+          pronunciation: "/bɑː/",
+          example: "Before it passes your quality bar",
+          difficulty: "intermediate"
+        },
+        {
+          word: "design",
+          definition: "A plan or drawing produced to show the look and function of something",
+          pronunciation: "/dɪˈzaɪn/",
+          example: "The best design is opinionated",
+          difficulty: "intermediate"
+        },
+        {
+          word: "particular",
+          definition: "Used to single out an individual member of a specified group or class",
+          pronunciation: "/pəˈtɪkjələr/",
+          example: "Design for someone in particular",
+          difficulty: "intermediate"
+        },
+        {
+          word: "impossible",
+          definition: "Not able to occur, exist, or be done",
+          pronunciation: "/ɪmˈpɒsəbəl/",
+          example: "Nearly impossible to design",
+          difficulty: "intermediate"
+        },
+        {
+          word: "specific",
+          definition: "Clearly defined or identified",
+          pronunciation: "/spəˈsɪfɪk/",
+          example: "The more specific your product's purpose",
+          difficulty: "intermediate"
+        },
+        {
+          word: "purpose",
+          definition: "The reason for which something is done or created",
+          pronunciation: "/ˈpɜːpəs/",
+          example: "Your product's purpose",
+          difficulty: "intermediate"
+        },
+        {
+          word: "perform",
+          definition: "Carry out, accomplish, or fulfill an action, task, or function",
+          pronunciation: "/pəˈfɔːm/",
+          example: "The better it will perform",
+          difficulty: "intermediate"
+        },
+        {
+          word: "intended",
+          definition: "Planned or meant",
+          pronunciation: "/ɪnˈtendɪd/",
+          example: "For its intended use",
+          difficulty: "intermediate"
+        },
+        {
+          word: "scope",
+          definition: "The extent of the area or subject matter that something deals with",
+          pronunciation: "/skəʊp/",
+          example: "Reduce scope",
+          difficulty: "intermediate"
+        },
+        {
+          word: "difficult",
+          definition: "Needing much effort or skill to accomplish, deal with, or understand",
+          pronunciation: "/ˈdɪfɪkəlt/",
+          example: "People who find quality difficult",
+          difficulty: "intermediate"
+        },
+        {
+          word: "binary",
+          definition: "Relating to, composed of, or involving two things",
+          pronunciation: "/ˈbaɪnəri/",
+          example: "Quality isn't binary",
+          difficulty: "intermediate"
+        },
+        {
+          word: "continuously",
+          definition: "Without interruption or gaps",
+          pronunciation: "/kənˈtɪnjuəsli/",
+          example: "Continuously refining a product",
+          difficulty: "intermediate"
+        },
+        {
+          word: "refining",
+          definition: "Making minor changes so as to improve or clarify",
+          pronunciation: "/rɪˈfaɪnɪŋ/",
+          example: "Continuously refining a product",
+          difficulty: "intermediate"
+        },
+        {
+          word: "standard",
+          definition: "A level of quality or attainment",
+          pronunciation: "/ˈstændəd/",
+          example: "To meet a standard",
+          difficulty: "intermediate"
+        },
+        {
+          word: "locked",
+          definition: "Fastened or secured with a lock",
+          pronunciation: "/lɒkt/",
+          example: "Don't get locked into one way",
+          difficulty: "intermediate"
+        },
+        {
+          word: "singular",
+          definition: "Exceptionally good or great; remarkable",
+          pronunciation: "/ˈsɪŋɡjələr/",
+          example: "We don't have a singular process",
+          difficulty: "intermediate"
+        },
+        {
+          word: "process",
+          definition: "A series of actions or steps taken to achieve a particular end",
+          pronunciation: "/ˈprəʊses/",
+          example: "A singular process",
+          difficulty: "intermediate"
+        },
+        {
+          word: "values",
+          definition: "Principles or standards of behavior",
+          pronunciation: "/ˈvæljuːz/",
+          example: "Establish values and principles",
+          difficulty: "intermediate"
+        },
+        {
+          word: "principles",
+          definition: "A fundamental truth or proposition that serves as the foundation for a system of belief",
+          pronunciation: "/ˈprɪnsəpəlz/",
+          example: "Values and principles",
+          difficulty: "intermediate"
+        },
+        {
+          word: "direct",
+          definition: "Extending or moving from one place to another by the shortest way without changing direction",
+          pronunciation: "/dəˈrekt/",
+          example: "Push direct responsibility",
+          difficulty: "intermediate"
+        },
+        {
+          word: "freedom",
+          definition: "The power or right to act, speak, or think as one wants",
+          pronunciation: "/ˈfriːdəm/",
+          example: "Giving them the freedom to make decisions",
+          difficulty: "intermediate"
+        },
+        {
+          word: "decisions",
+          definition: "A conclusion or resolution reached after consideration",
+          pronunciation: "/dɪˈsɪʒənz/",
+          example: "Freedom to make decisions",
+          difficulty: "intermediate"
+        },
+        {
+          word: "data",
+          definition: "Facts and statistics collected together for reference or analysis",
+          pronunciation: "/ˈdeɪtə/",
+          example: "Data can be a crutch",
+          difficulty: "intermediate"
+        },
+        {
+          word: "experiments",
+          definition: "A scientific procedure undertaken to make a discovery, test a hypothesis, or demonstrate a known fact",
+          pronunciation: "/ɪkˈsperɪmənts/",
+          example: "Based on data or experiments",
+          difficulty: "intermediate"
+        },
+        {
+          word: "develop",
+          definition: "Grow or cause to grow and become more mature, advanced, or elaborate",
+          pronunciation: "/dɪˈveləp/",
+          example: "Develop and trust your intuition",
+          difficulty: "intermediate"
+        },
+        {
+          word: "trust",
+          definition: "Firm belief in the reliability, truth, ability, or strength of someone or something",
+          pronunciation: "/trʌst/",
+          example: "Trust your intuition",
+          difficulty: "intermediate"
+        },
+        {
+          word: "measure",
+          definition: "Ascertain the size, amount, or degree of something by using an instrument or device",
+          pronunciation: "/ˈmeʒər/",
+          example: "Quality is hard to measure",
+          difficulty: "intermediate"
+        },
+        {
+          word: "comfortable",
+          definition: "Giving a feeling of physical ease and relaxation",
+          pronunciation: "/ˈkʌmftəbəl/",
+          example: "Comfortable making decisions without data",
+          difficulty: "intermediate"
+        },
+        {
+          word: "guide",
+          definition: "A person who shows the way to others",
+          pronunciation: "/ɡaɪd/",
+          example: "Without data as your guide",
+          difficulty: "intermediate"
+        },
+        {
+          word: "experience",
+          definition: "Practical contact with and observation of facts or events",
+          pronunciation: "/ɪkˈspɪəriəns/",
+          example: "Provide the best experience",
+          difficulty: "intermediate"
+        },
+        {
+          word: "surprise",
+          definition: "An unexpected or astonishing event, fact, or thing",
+          pronunciation: "/səˈpraɪz/",
+          example: "You must surprise users",
+          difficulty: "intermediate"
+        },
+        {
+          word: "expect",
+          definition: "Regard something as likely to happen",
+          pronunciation: "/ɪkˈspekt/",
+          example: "You can't expect data to tell you how",
+          difficulty: "intermediate"
+        },
+        {
+          word: "success",
+          definition: "The accomplishment of an aim or purpose",
+          pronunciation: "/səkˈses/",
+          example: "Success depends on hiring people",
+          difficulty: "intermediate"
+        },
+        {
+          word: "depends",
+          definition: "Be controlled or determined by",
+          pronunciation: "/dɪˈpendz/",
+          example: "Success depends on hiring people",
+          difficulty: "intermediate"
+        },
+        {
+          word: "hiring",
+          definition: "The action of employing someone for wages",
+          pronunciation: "/ˈhaɪərɪŋ/",
+          example: "Hiring people who care about the craft",
+          difficulty: "intermediate"
+        },
+        {
+          word: "care",
+          definition: "Feel concern or interest; attach importance to something",
+          pronunciation: "/keər/",
+          example: "People who care about the craft",
+          difficulty: "intermediate"
+        },
+        {
+          word: "informed",
+          definition: "Having or showing knowledge of a particular subject or situation",
+          pronunciation: "/ɪnˈfɔːmd/",
+          example: "Make informed decisions based on their expertise",
+          difficulty: "intermediate"
+        },
+        {
+          word: "expertise",
+          definition: "Expert skill or knowledge in a particular field",
+          pronunciation: "/ˌekspɜːˈtiːz/",
+          example: "Based on their expertise",
+          difficulty: "intermediate"
+        },
+        {
+          word: "methodology",
+          definition: "A system of methods used in a particular area of study or activity",
+          pronunciation: "/ˌmeθəˈdɒlədʒi/",
+          example: "Agile methodology has revolutionized software development",
+          difficulty: "intermediate"
+        },
+        {
+          word: "implementation",
+          definition: "The process of putting a decision or plan into effect",
+          pronunciation: "/ˌɪmplɪmenˈteɪʃən/",
+          example: "The implementation of new features requires careful planning",
+          difficulty: "intermediate"
+        },
+        {
+          word: "scalability",
+          definition: "The capacity to be changed in size or scale",
+          pronunciation: "/ˌskeɪləˈbɪləti/",
+          example: "System scalability is crucial for growing applications",
+          difficulty: "intermediate"
+        },
+        {
+          word: "agile",
+          definition: "Able to move quickly and easily",
+          pronunciation: "/ˈædʒaɪl/",
+          example: "Agile methodology has revolutionized software development",
+          difficulty: "intermediate"
+        },
+        {
+          word: "revolutionized",
+          definition: "Completely changed something in a fundamental way",
+          pronunciation: "/ˌrevəˈluːʃənaɪzd/",
+          example: "Agile methodology has revolutionized software development",
+          difficulty: "intermediate"
+        },
+        {
+          word: "features",
+          definition: "A distinctive attribute or aspect of something",
+          pronunciation: "/ˈfiːtʃəz/",
+          example: "The implementation of new features requires careful planning",
+          difficulty: "intermediate"
+        },
+        {
+          word: "planning",
+          definition: "The process of making plans for something",
+          pronunciation: "/ˈplænɪŋ/",
+          example: "New features requires careful planning",
+          difficulty: "intermediate"
+        },
+        {
+          word: "system",
+          definition: "A set of things working together as parts of a mechanism",
+          pronunciation: "/ˈsɪstəm/",
+          example: "System scalability is crucial for growing applications",
+          difficulty: "intermediate"
+        },
+        {
+          word: "crucial",
+          definition: "Decisive or critical, especially in the success or failure of something",
+          pronunciation: "/ˈkruːʃəl/",
+          example: "System scalability is crucial for growing applications",
+          difficulty: "intermediate"
+        },
+        {
+          word: "growing",
+          definition: "Increasing in size, amount, or degree",
+          pronunciation: "/ˈɡrəʊɪŋ/",
+          example: "Scalability is crucial for growing applications",
+          difficulty: "intermediate"
+        },
+        {
+          word: "applications",
+          definition: "A program or piece of software designed to fulfill a particular purpose",
+          pronunciation: "/ˌæplɪˈkeɪʃənz/",
+          example: "Scalability for growing applications",
+          difficulty: "intermediate"
+        },
+        {
+          word: "development",
+          definition: "The process of developing or being developed",
+          pronunciation: "/dɪˈveləpmənt/",
+          example: "Software development practices",
+          difficulty: "intermediate"
+        },
+        {
+          word: "practices",
+          definition: "The actual application or use of an idea, belief, or method",
+          pronunciation: "/ˈpræktɪsɪz/",
+          example: "Software development practices",
+          difficulty: "intermediate"
+        },
+        {
+          word: "focusing",
+          definition: "Directing attention or effort toward something",
+          pronunciation: "/ˈfəʊkəsɪŋ/",
+          example: "Focusing on agile methodologies",
+          difficulty: "intermediate"
+        },
+        {
+          word: "impact",
+          definition: "A marked effect or influence",
+          pronunciation: "/ˈɪmpækt/",
+          example: "Their impact on team productivity",
+          difficulty: "intermediate"
+        },
+        {
+          word: "productivity",
+          definition: "The effectiveness of productive effort",
+          pronunciation: "/ˌprɒdʌkˈtɪvəti/",
+          example: "Team productivity and project success",
+          difficulty: "intermediate"
+        },
+        {
+          word: "project",
+          definition: "An individual or collaborative enterprise that is carefully planned",
+          pronunciation: "/ˈprɒdʒekt/",
+          example: "Project success rates",
+          difficulty: "intermediate"
+        },
+        {
+          word: "success",
+          definition: "The accomplishment of an aim or purpose",
+          pronunciation: "/səkˈses/",
+          example: "Project success rates",
+          difficulty: "intermediate"
+        },
+        {
+          word: "rates",
+          definition: "A measure, quantity, or frequency, typically one measured against another quantity",
+          pronunciation: "/reɪts/",
+          example: "Project success rates",
+          difficulty: "intermediate"
+        },
+        {
+          word: "team",
+          definition: "A group of people who work together",
+          pronunciation: "/tiːm/",
+          example: "Team productivity and collaboration",
+          difficulty: "intermediate"
+        },
+        {
+          word: "collaboration",
+          definition: "The action of working with someone to produce something",
+          pronunciation: "/kəˌlæbəˈreɪʃən/",
+          example: "Team collaboration and productivity",
+          difficulty: "intermediate"
+        },
+        {
+          word: "architecture",
+          definition: "The complex or carefully designed structure of something",
+          pronunciation: "/ˈɑːkɪtektʃər/",
+          example: "System architecture planning",
+          difficulty: "intermediate"
+        },
+        {
+          word: "lifecycle",
+          definition: "The series of changes in the life of an organism",
+          pronunciation: "/ˈlaɪfsaɪkl/",
+          example: "Development lifecycle",
+          difficulty: "intermediate"
+        },
+        {
+          word: "technology",
+          definition: "The application of scientific knowledge for practical purposes",
+          pronunciation: "/tekˈnɒlədʒi/",
+          example: "Technology and innovation",
+          difficulty: "intermediate"
+        },
+        {
+          word: "innovation",
+          definition: "A new method, idea, or product",
+          pronunciation: "/ˌɪnəˈveɪʃən/",
+          example: "Technology and innovation",
+          difficulty: "intermediate"
+        },
+    ],
+    comprehensionQuestions: [
+      {
+        question: "What is Karri Saarinen's main differentiator for Linear?",
+        options: [
+          "Low prices",
+          "Impenetrable quality",
+          "Aggressive marketing",
+          "Large teams"
+        ],
+        correct: 1,
+        explanation: "Karri's main differentiator is making impenetrable quality his differentiator in a crowded startup market."
+      },
+      {
+        question: "According to Karri, what is a startup's biggest challenge?",
+        options: [
+          "Raising funds",
+          "Getting people to notice and care",
+          "Hiring engineers",
+          "Building fast"
+        ],
+        correct: 1,
+        explanation: "Karri says the biggest challenge is getting people to notice and care."
+      },
+      {
+        question: "What does Karri say about data in product design?",
+        options: [
+          "Data is always necessary",
+          "Data can be a crutch",
+          "Data guarantees success",
+          "Data should be ignored"
+        ],
+        correct: 1,
+        explanation: "Karri says that data can be a crutch and you must develop and trust your intuition."
+      }
+    ]
+  }
+
+  const beginnerPassage: ReadingPassage = {
+    id: "3",
+    title: "The Future of Remote Work",
+    content: `Remote work has become a major trend in the modern workplace. Many companies now offer flexible work arrangements that allow employees to work from home or anywhere they choose. This shift has changed how we think about productivity and work-life balance.
+
+Technology plays a crucial role in making remote work possible. Video conferencing tools, project management software, and cloud-based platforms help teams stay connected and organized. These tools make it easier for people to collaborate even when they're not in the same physical location.
+
+However, remote work also presents challenges. Some people find it difficult to separate work from personal life when working from home. Others miss the social interaction that comes with working in an office. Companies need to find ways to maintain team culture and ensure everyone feels included.
+
+The benefits of remote work are clear for many people. It saves time on commuting, reduces stress, and allows for more flexible schedules. Parents can better balance work and family responsibilities. People can work from anywhere, which opens up opportunities for those who live in areas with limited job options.
+
+As we look to the future, it's likely that remote work will continue to grow. Companies are learning how to manage remote teams effectively, and employees are developing new skills to work independently. The key is finding the right balance between flexibility and structure.`,
+    difficulty: "beginner",
+    wordCount: 180,
+    estimatedTime: 6,
+    vocabulary: [
+      {
+        word: "remote",
+        definition: "Located far away; distant",
+        pronunciation: "/rɪˈməʊt/",
+        example: "Remote work allows people to work from anywhere.",
+        difficulty: "beginner"
+      },
+      {
+        word: "trend",
+        definition: "A general direction in which something is developing or changing",
+        pronunciation: "/trend/",
+        example: "Remote work has become a major trend in business.",
+        difficulty: "beginner"
+      },
+      {
+        word: "flexible",
+        definition: "Able to bend easily without breaking; adaptable",
+        pronunciation: "/ˈfleksəbəl/",
+        example: "Flexible work arrangements help employees balance work and life.",
+        difficulty: "beginner"
+      },
+      {
+        word: "productivity",
+        definition: "The effectiveness of productive effort",
+        pronunciation: "/ˌprɒdʌkˈtɪvəti/",
+        example: "Many people find their productivity increases when working remotely.",
+        difficulty: "intermediate"
+      },
+      {
+        word: "collaborate",
+        definition: "Work jointly on an activity or project",
+        pronunciation: "/kəˈlæbəreɪt/",
+        example: "Teams need to collaborate effectively even when working remotely.",
+        difficulty: "intermediate"
+      },
+      {
+        word: "challenge",
+        definition: "A difficult task or problem",
+        pronunciation: "/ˈtʃælɪndʒ/",
+        example: "Remote work presents new challenges for managers.",
+        difficulty: "beginner"
+      },
+      {
+        word: "commuting",
+        definition: "Travel some distance between one's home and place of work",
+        pronunciation: "/kəˈmjuːtɪŋ/",
+        example: "Remote work eliminates the need for daily commuting.",
+        difficulty: "intermediate"
+      },
+      {
+        word: "opportunity",
+        definition: "A time or set of circumstances that makes it possible to do something",
+        pronunciation: "/ˌɒpəˈtjuːnəti/",
+        example: "Remote work creates opportunities for people in rural areas.",
+        difficulty: "intermediate"
+      }
+    ],
+    comprehensionQuestions: [
+      {
+        question: "What is one benefit of remote work mentioned in the article?",
+        options: [
+          "It always increases productivity",
+          "It saves time on commuting",
+          "It eliminates all workplace challenges",
+          "It requires no technology"
+        ],
+        correct: 1,
+        explanation: "The article mentions that remote work saves time on commuting as one of its benefits."
+      },
+      {
+        question: "What technology is mentioned as important for remote work?",
+        options: [
+          "Social media platforms",
+          "Video conferencing tools",
+          "Gaming consoles",
+          "Smart home devices"
+        ],
+        correct: 1,
+        explanation: "The article specifically mentions video conferencing tools as important for remote work."
+      }
+    ]
+  }
+
+  const readingPassages: ReadingPassage[] = [beginnerPassage, samplePassage, karriPassage];
 
   // Set initial passage when component mounts
   useEffect(() => {
@@ -641,12 +1536,15 @@ Yamashita champions the blurring of silos between design, PMs, and engineers: co
             className="cursor-pointer text-blue-600 hover:text-blue-800 underline decoration-dotted"
             onClick={() => handleWordClick(cleanWord)}
           >
-            {word}{' '}
+            {word}
           </span>
         )
       }
-      return <span key={index}>{word} </span>
-    })
+      return <span key={index}>{word}</span>
+    }).reduce((prev, curr, index) => {
+      // 単語間にスペースを追加（最後の単語以外）
+      return index < words.length - 1 ? [prev, curr, ' '] : [prev, curr]
+    }, [] as React.ReactNode[])
   }
 
   const handleAnswerSelect = (answerIndex: number) => {
@@ -676,6 +1574,37 @@ Yamashita champions the blurring of silos between design, PMs, and engineers: co
     }
   }
 
+  const speakText = (text: string) => {
+    if ('speechSynthesis' in window) {
+      // 既存の読み上げを停止
+      window.speechSynthesis.cancel()
+      
+      const utterance = new SpeechSynthesisUtterance(text)
+      utterance.lang = 'en-US'
+      utterance.rate = 0.9
+      utterance.pitch = 1
+      utterance.volume = isMuted ? 0 : 1
+      
+      utterance.onstart = () => setIsReading(true)
+      utterance.onend = () => setIsReading(false)
+      utterance.onpause = () => setIsReading(false)
+      utterance.onresume = () => setIsReading(true)
+      
+      window.speechSynthesis.speak(utterance)
+    }
+  }
+
+  const stopReading = () => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel()
+      setIsReading(false)
+    }
+  }
+
+  const toggleMute = () => {
+    setIsMuted(!isMuted)
+  }
+
   if (!selectedPassage) {
     return (
       <div className="space-y-6">
@@ -693,56 +1622,125 @@ Yamashita champions the blurring of silos between design, PMs, and engineers: co
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <BookOpen className="w-5 h-5" />
-            <span>Interactive Reading</span>
-          </CardTitle>
+              <CardTitle className="flex items-center space-x-2">
+                <BookOpen className="w-5 h-5" />
+                <span>Interactive Reading</span>
+              </CardTitle>
           <CardDescription>
             Click on highlighted words to see definitions and test your comprehension
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <Badge className={getDifficultyColor(selectedPassage.difficulty)}>
-                  {selectedPassage.difficulty}
-                </Badge>
-                <span className="text-sm text-slate-600">
-                  {selectedPassage.wordCount} words • {selectedPassage.estimatedTime} min read
-                </span>
+          <div className="space-y-6">
+            {/* Article Selection */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-slate-900">Choose an Article</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {readingPassages.map((passage) => (
+                  <div
+                    key={passage.id}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${
+                      selectedPassage.id === passage.id
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-slate-200 hover:border-slate-300'
+                    }`}
+                    onClick={() => {
+                      setSelectedPassage(passage)
+                      setCurrentQuestion(0)
+                      setUserAnswers([])
+                      setShowResults(false)
+                      setActiveTab("reading")
+                    }}
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <h4 className="font-semibold text-slate-900 line-clamp-2">{passage.title}</h4>
+                      <Badge className={getDifficultyColor(passage.difficulty)}>
+                        {passage.difficulty}
+                      </Badge>
+                    </div>
+                    <div className="space-y-2 text-sm text-slate-600">
+                      <div className="flex items-center space-x-4">
+                        <span>{passage.wordCount} words</span>
+                        <span>•</span>
+                        <span>{passage.estimatedTime} min read</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <BookOpen className="w-4 h-4" />
+                        <span>{passage.vocabulary.length} vocabulary words</span>
+                      </div>
+                    </div>
+                    <div className="mt-3 text-xs text-slate-500 line-clamp-2">
+                      {passage.content.substring(0, 120)}...
+                    </div>
+                  </div>
+                ))}
               </div>
-              <Select value={selectedPassage.id} onValueChange={(value) => {
-                const passage = readingPassages.find(p => p.id === value)
-                if (passage) {
-                  setSelectedPassage(passage)
-                  setCurrentQuestion(0)
-                  setUserAnswers([])
-                  setShowResults(false)
-                }
-              }}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Select article" />
-                </SelectTrigger>
-                <SelectContent>
-                  {readingPassages.map((passage) => (
-                    <SelectItem key={passage.id} value={passage.id}>
-                      {passage.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
+
+            {/* Current Article Info */}
+            {selectedPassage && (
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                <div className="flex items-center space-x-4">
+                  <Badge className={getDifficultyColor(selectedPassage.difficulty)}>
+                    {selectedPassage.difficulty}
+                  </Badge>
+                  <span className="text-sm text-slate-600">
+                    {selectedPassage.wordCount} words • {selectedPassage.estimatedTime} min read
+                  </span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="text-sm text-slate-500">
+                    Article {readingPassages.findIndex(p => p.id === selectedPassage.id) + 1} of {readingPassages.length}
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const currentIndex = readingPassages.findIndex(p => p.id === selectedPassage.id)
+                        const prevIndex = currentIndex > 0 ? currentIndex - 1 : readingPassages.length - 1
+                        const prevPassage = readingPassages[prevIndex]
+                        setSelectedPassage(prevPassage)
+                        setCurrentQuestion(0)
+                        setUserAnswers([])
+                        setShowResults(false)
+                        setActiveTab("reading")
+                      }}
+                      disabled={readingPassages.length <= 1}
+                    >
+                      ← Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const currentIndex = readingPassages.findIndex(p => p.id === selectedPassage.id)
+                        const nextIndex = currentIndex < readingPassages.length - 1 ? currentIndex + 1 : 0
+                        const nextPassage = readingPassages[nextIndex]
+                        setSelectedPassage(nextPassage)
+                        setCurrentQuestion(0)
+                        setUserAnswers([])
+                        setShowResults(false)
+                        setActiveTab("reading")
+                      }}
+                      disabled={readingPassages.length <= 1}
+                    >
+                      Next →
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <Tabs value={showResults ? "quiz" : "reading"} className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="reading">Reading</TabsTrigger>
-              <TabsTrigger value="quiz">Comprehension Quiz</TabsTrigger>
+              <TabsTrigger value="quiz">Vocabulary Review</TabsTrigger>
             </TabsList>
 
             <TabsContent value="reading" className="space-y-4">
@@ -750,27 +1748,49 @@ Yamashita champions the blurring of silos between design, PMs, and engineers: co
                 <CardHeader>
                   <CardTitle>{selectedPassage.title}</CardTitle>
                   <div className="flex items-center space-x-2">
-                    <Button
+              <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setShowDefinitions(!showDefinitions)}
-                    >
+              >
                       <Eye className="w-4 h-4 mr-2" />
                       {showDefinitions ? "Hide" : "Show"} Definitions
+              </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={isReading ? stopReading : () => speakText(selectedPassage.content)}
+                      className={isReading ? "bg-red-50 text-red-700 border-red-200" : ""}
+                    >
+                      {isReading ? (
+                        <>
+                          <VolumeX className="w-4 h-4 mr-2" />
+                          Stop Reading
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="w-4 h-4 mr-2" />
+                          Read Aloud
+                        </>
+                      )}
                     </Button>
-                    <Button variant="outline" size="sm">
-                      <Volume2 className="w-4 h-4 mr-2" />
-                      Read Aloud
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={toggleMute}
+                      className={isMuted ? "bg-gray-50 text-gray-700 border-gray-200" : ""}
+                    >
+                      {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                     </Button>
-                  </div>
+            </div>
                 </CardHeader>
                 <CardContent>
                   <div className="prose max-w-none">
                     <div className="text-lg leading-relaxed space-y-4">
                       {highlightVocabulary(selectedPassage.content)}
                     </div>
-                  </div>
-                  
+          </div>
+
                   {showDefinitions && (
                     <div className="mt-6 p-4 bg-slate-50 rounded-lg">
                       <h4 className="font-medium mb-3">Vocabulary</h4>
@@ -785,138 +1805,66 @@ Yamashita champions the blurring of silos between design, PMs, and engineers: co
                               <span className="text-sm text-slate-600 ml-2">[{vocab.pronunciation}]</span>
                               <p className="text-sm text-slate-700">{vocab.definition}</p>
                               <p className="text-sm italic text-slate-600">"{vocab.example}"</p>
-                            </div>
+              </div>
                           </div>
                         ))}
                       </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+            </div>
+          )}
+        </CardContent>
+      </Card>
             </TabsContent>
 
             <TabsContent value="quiz" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Comprehension Quiz</CardTitle>
+                  <CardTitle className="flex items-center space-x-2">
+                    <BookOpen className="w-4 h-4" />
+                    <span>Vocabulary Review</span>
+                  </CardTitle>
                   <CardDescription>
-                    Test your understanding of the passage
+                    Review all vocabulary from this passage. Click on words to hear pronunciation.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {!showResults ? (
-                    <div className="space-y-6">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-slate-600">
-                          Question {currentQuestion + 1} of {selectedPassage.comprehensionQuestions.length}
-                        </span>
-                        <Progress 
-                          value={((currentQuestion + 1) / selectedPassage.comprehensionQuestions.length) * 100} 
-                          className="w-32"
-                        />
-                      </div>
-
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-medium">
-                          {selectedPassage.comprehensionQuestions[currentQuestion].question}
-                        </h3>
-                        
-                        <div className="space-y-2">
-                          {selectedPassage.comprehensionQuestions[currentQuestion].options.map((option, index) => (
-                            <Button
-                              key={index}
-                              variant={userAnswers[currentQuestion] === index ? "default" : "outline"}
-                              className="w-full justify-start text-left h-auto p-4"
-                              onClick={() => handleAnswerSelect(index)}
-                            >
-                              <span className="mr-3 font-medium">{String.fromCharCode(65 + index)}.</span>
-                              {option}
-                            </Button>
-                          ))}
-                        </div>
-
-                        <div className="flex justify-between">
-                          <Button
-                            variant="outline"
-                            disabled={currentQuestion === 0}
-                            onClick={() => setCurrentQuestion(currentQuestion - 1)}
-                          >
-                            Previous
-                          </Button>
-                          
-                          {currentQuestion < selectedPassage.comprehensionQuestions.length - 1 ? (
-                            <Button
-                              onClick={() => setCurrentQuestion(currentQuestion + 1)}
-                              disabled={userAnswers[currentQuestion] === undefined}
-                            >
-                              Next
-                            </Button>
-                          ) : (
-                            <Button
-                              onClick={() => setShowResults(true)}
-                              disabled={userAnswers[currentQuestion] === undefined}
-                            >
-                              See Results
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-6">
-                      <div className="text-center">
-                        <div className="text-4xl font-bold text-blue-600 mb-2">
-                          {calculateScore()}%
-                        </div>
-                        <p className="text-slate-600">
-                          You got {userAnswers.filter((answer, index) => 
-                            answer === selectedPassage.comprehensionQuestions[index].correct
-                          ).length} out of {selectedPassage.comprehensionQuestions.length} questions correct
-                        </p>
-                      </div>
-
-                      <div className="space-y-4">
-                        {selectedPassage.comprehensionQuestions.map((question, index) => (
-                          <div key={index} className="p-4 border rounded-lg">
-                            <div className="flex items-start space-x-2 mb-2">
-                              {userAnswers[index] === question.correct ? (
-                                <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
-                              ) : (
-                                <XCircle className="w-5 h-5 text-red-600 mt-0.5" />
-                              )}
-                              <div className="flex-1">
-                                <p className="font-medium">{question.question}</p>
-                                <p className="text-sm text-slate-600 mt-1">
-                                  Your answer: {question.options[userAnswers[index]]}
-                                </p>
-                                {userAnswers[index] !== question.correct && (
-                                  <p className="text-sm text-green-600 mt-1">
-                                    Correct: {question.options[question.correct]}
-                                  </p>
-                                )}
-                                <p className="text-sm text-slate-500 mt-2">{question.explanation}</p>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      <Button 
-                        className="w-full" 
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {selectedPassage.vocabulary.map((vocab, index) => (
+                      <div 
+                        key={index} 
+                        className="p-4 bg-white rounded-lg border hover:shadow-md transition-shadow cursor-pointer"
                         onClick={() => {
-                          setShowResults(false)
-                          setCurrentQuestion(0)
-                          setUserAnswers([])
+                          setSelectedWord(vocab)
+                          speakText(vocab.word)
                         }}
                       >
-                        Try Again
-                      </Button>
-                    </div>
-                  )}
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="font-semibold text-lg text-slate-900">{vocab.word}</span>
+                          <Badge className={getDifficultyColor(vocab.difficulty)}>
+                            {vocab.difficulty}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-slate-600 mb-2">[{vocab.pronunciation}]</p>
+                        <p className="text-sm text-slate-700 mb-2">{vocab.definition}</p>
+                        <div className="bg-slate-50 p-2 rounded text-sm italic text-slate-600">
+                          "{vocab.example}"
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                    <h4 className="font-medium text-blue-900 mb-2">Study Tips</h4>
+                    <ul className="text-sm text-blue-800 space-y-1">
+                      <li>• Click on any word to hear its pronunciation</li>
+                      <li>• Review difficult words more frequently</li>
+                      <li>• Practice using these words in your own sentences</li>
+                      <li>• Return to the reading to see words in context</li>
+                    </ul>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
-          </Tabs>
+            </Tabs>
         </div>
 
         <div className="space-y-4">
@@ -934,17 +1882,17 @@ Yamashita champions the blurring of silos between design, PMs, and engineers: co
                 <Badge className={getDifficultyColor(selectedWord.difficulty)}>
                   {selectedWord.difficulty}
                 </Badge>
-              </CardContent>
-            </Card>
-          )}
+        </CardContent>
+      </Card>
+      )}
 
           <Card>
-            <CardHeader>
+          <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Target className="w-4 h-4" />
                 <span>Reading Goals</span>
-              </CardTitle>
-            </CardHeader>
+            </CardTitle>
+          </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <div className="flex justify-between text-sm mb-1">
@@ -958,19 +1906,19 @@ Yamashita champions the blurring of silos between design, PMs, and engineers: co
                 <div className="flex justify-between text-sm mb-1">
                   <span>Weekly Articles</span>
                   <span>3/5 articles</span>
-                </div>
+                    </div>
                 <Progress value={60} className="h-2" />
-              </div>
+                    </div>
 
               <div>
                 <div className="flex justify-between text-sm mb-1">
                   <span>Comprehension</span>
                   <span>85%</span>
-                </div>
+                  </div>
                 <Progress value={85} className="h-2" />
               </div>
-            </CardContent>
-          </Card>
+          </CardContent>
+        </Card>
         </div>
       </div>
     </div>

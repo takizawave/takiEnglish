@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { TrendingUp, FileText, Camera, BookOpen, Clock, MoreHorizontal, BookOpen as ReadingIcon, Mic, PenTool } from "lucide-react"
+import { TrendingUp, FileText, BookOpen, Clock, MoreHorizontal, BookOpen as ReadingIcon, Mic, PenTool, Volume2 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 interface MobileBottomNavProps {
@@ -12,7 +12,7 @@ interface MobileBottomNavProps {
 const mainNavItems = [
   { id: "dashboard", label: "Home", icon: TrendingUp },
   { id: "article", label: "Article", icon: FileText },
-  { id: "ocr", label: "Scan", icon: Camera },
+
   { id: "vocab", label: "Vocab", icon: BookOpen },
 ]
 
@@ -20,6 +20,7 @@ const moreNavItems = [
   { id: "reading", label: "Reading", icon: ReadingIcon },
   { id: "pronunciation", label: "Pronunciation", icon: Mic },
   { id: "writing", label: "Writing", icon: PenTool },
+  { id: "tts", label: "Text-to-Speech", icon: Volume2 },
   { id: "review", label: "Review", icon: Clock },
   { id: "lint", label: "Grammar Lint" },
   { id: "logs", label: "Build Logs" },

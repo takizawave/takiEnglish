@@ -8,7 +8,7 @@ import { GitBranch, Clock, CheckCircle, AlertCircle, ExternalLink } from "lucide
 interface BuildLogEntry {
   id: string
   timestamp: string
-  type: "ocr" | "lint" | "vocab" | "review"
+  type: "lint" | "vocab" | "review"
   status: "success" | "warning" | "error"
   message: string
   details: string
@@ -18,19 +18,7 @@ interface BuildLogEntry {
 
 export function BuildLog() {
   const buildLogs: BuildLogEntry[] = [
-    {
-      id: "1",
-      timestamp: "2024-01-15T10:30:00Z",
-      type: "ocr",
-      status: "success",
-      message: "OCR processing completed",
-      details: "Extracted 247 words from textbook Chapter 3, processed 15 new vocabulary tokens",
-      duration: 2.3,
-      links: [
-        { label: "View in Notion", url: "#" },
-        { label: "Original Image", url: "#" },
-      ],
-    },
+
     {
       id: "2",
       timestamp: "2024-01-15T10:25:00Z",
@@ -64,16 +52,7 @@ export function BuildLog() {
         { label: "Review Items", url: "#" },
       ],
     },
-    {
-      id: "5",
-      timestamp: "2024-01-14T22:15:00Z",
-      type: "ocr",
-      status: "error",
-      message: "OCR processing failed",
-      details: "Image quality too low, unable to extract text reliably",
-      duration: 5.1,
-      links: [{ label: "Retry Processing", url: "#" }],
-    },
+
   ]
 
   const getStatusIcon = (status: string) => {
@@ -104,8 +83,7 @@ export function BuildLog() {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case "ocr":
-        return "bg-blue-100 text-blue-800"
+
       case "lint":
         return "bg-purple-100 text-purple-800"
       case "vocab":

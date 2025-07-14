@@ -49,7 +49,7 @@ export function MobileProgressDashboard() {
               <div key={index} className="text-center space-y-2">
                 <div className="text-xs text-slate-600">{day.day}</div>
                 <div className="relative">
-                  <div className="w-full bg-slate-200 rounded-full h-12 flex items-end justify-center">
+                  <div className="w-full bg-slate-200 rounded-full h-40 flex items-end justify-center">
                     <div
                       className={`w-full rounded-full transition-all duration-300 ${
                         day.completed >= day.target ? "bg-green-500" : "bg-blue-500"

@@ -18,17 +18,16 @@ import {
 import {
   TrendingUp,
   FileText,
-  Camera,
   MessageSquare,
   BookOpen,
   Clock,
   GitBranch,
   Settings,
-  Crown,
   Code,
   BookOpen as ReadingIcon,
   Mic,
   PenTool,
+  Volume2,
 } from "lucide-react"
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
@@ -40,7 +39,6 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 const mainNavItems = [
   { id: "dashboard", label: "Dashboard", icon: TrendingUp },
   { id: "article", label: "Article Processor", icon: FileText },
-  { id: "ocr", label: "OCR Input", icon: Camera },
   { id: "vocab", label: "Vocabulary", icon: BookOpen },
 ]
 
@@ -48,6 +46,7 @@ const learningNavItems = [
   { id: "reading", label: "Interactive Reading", icon: ReadingIcon },
   { id: "pronunciation", label: "Pronunciation", icon: Mic },
   { id: "writing", label: "Writing Assistant", icon: PenTool },
+  { id: "tts", label: "Text-to-Speech", icon: Volume2 },
 ]
 
 const toolsNavItems = [
@@ -74,8 +73,8 @@ export function AppSidebar({ activeTab, onTabChange, userProfile, ...props }: Ap
                 <Code className="size-4 text-white" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">Learning Platform</span>
-                <span className="truncate text-xs">takizawave v0.91</span>
+                        <span className="truncate font-semibold">Atomic Language</span>
+        <span className="truncate text-xs">v0.91</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -170,32 +169,16 @@ export function AppSidebar({ activeTab, onTabChange, userProfile, ...props }: Ap
 
       <SidebarFooter>
         <SidebarMenu>
-          {userProfile?.subscription_tier === "free" && (
-            <SidebarMenuItem>
-              <SidebarMenuButton className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700">
-                <Crown />
-                <span>Upgrade to Pro</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          )}
+          
 
           <SidebarMenuItem>
             <SidebarMenuButton>
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg overflow-hidden">
-                <img src="/images/takizawave-avatar.jpg" alt="takizawave" className="w-full h-full object-cover" />
+                <img src="/images/takizawave-avatar.jpg" alt="Atomic Language" className="w-full h-full object-cover" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{userProfile?.full_name || "takizawave"}</span>
-                <Badge
-                  variant="outline"
-                  className={`text-xs w-fit ${
-                    userProfile?.subscription_tier === "free"
-                      ? "bg-gray-50 text-gray-700"
-                      : "bg-green-50 text-green-700"
-                  }`}
-                >
-                  {userProfile?.subscription_tier === "free" ? "Free" : "Pro"}
-                </Badge>
+                <span className="truncate font-semibold">{userProfile?.full_name || "Atomic Language"}</span>
+
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>

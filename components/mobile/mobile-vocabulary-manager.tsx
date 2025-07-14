@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BookOpen, Plus, Search, Volume2, Star, Grid, List } from "lucide-react"
+import { BookOpen, Plus, Search, Volume2, VolumeX, Star, Grid, List, Play, Pause } from "lucide-react"
 import { SwipeCards } from "./swipe-cards"
 
 interface VocabToken {
@@ -27,6 +27,9 @@ export function MobileVocabularyManager() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards")
+  const [isReading, setIsReading] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
+  const [currentReadingWord, setCurrentReadingWord] = useState("")
 
   const mockTokens: VocabToken[] = [
     {
@@ -124,6 +127,51 @@ export function MobileVocabularyManager() {
     console.log(`Card ${cardId}: ${correct ? "Correct" : "Incorrect"}`)
   }
 
+  const speakWord = (word: string) => {
+    if ('speechSynthesis' in window) {
+      // 既存の読み上げを停止
+      window.speechSynthesis.cancel()
+      
+      const utterance = new SpeechSynthesisUtterance(word)
+      utterance.lang = 'en-US'
+      utterance.rate = 0.8
+      utterance.pitch = 1
+      utterance.volume = isMuted ? 0 : 1
+      
+      utterance.onstart = () => {
+        setIsReading(true)
+        setCurrentReadingWord(word)
+      }
+      
+      utterance.onend = () => {
+        setIsReading(false)
+        setCurrentReadingWord("")
+      }
+      
+      utterance.onpause = () => {
+        setIsReading(false)
+      }
+      
+      utterance.onresume = () => {
+        setIsReading(true)
+      }
+      
+      window.speechSynthesis.speak(utterance)
+    }
+  }
+
+  const stopReading = () => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel()
+      setIsReading(false)
+      setCurrentReadingWord("")
+    }
+  }
+
+  const toggleMute = () => {
+    setIsMuted(!isMuted)
+  }
+
   return (
     <div className="space-y-4">
       <Card>
@@ -132,7 +180,29 @@ export function MobileVocabularyManager() {
             <BookOpen className="w-5 h-5" />
             <span>Vocabulary Manager</span>
           </CardTitle>
-          <CardDescription>Manage your vocabulary tokens with spaced repetition</CardDescription>
+          <CardDescription className="flex items-center justify-between">
+            <span>Manage your vocabulary tokens with spaced repetition</span>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleMute}
+                className={isMuted ? "bg-gray-50 text-gray-700 border-gray-200" : ""}
+              >
+                {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              </Button>
+              {isReading && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={stopReading}
+                  className="bg-red-50 text-red-700 border-red-200"
+                >
+                  <Pause className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex space-x-2">
@@ -188,6 +258,19 @@ export function MobileVocabularyManager() {
         </TabsContent>
 
         <TabsContent value="manage" className="space-y-4">
+          {/* 現在読み上げ中の単語表示 */}
+          {currentReadingWord && (
+            <Card className="bg-blue-50 border-blue-200">
+              <CardContent className="p-3">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+                  <span className="text-sm text-blue-700 font-medium">Reading:</span>
+                  <span className="font-bold text-blue-900">{currentReadingWord}</span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {viewMode === "list" ? (
             <div className="space-y-3">
               {filteredTokens.map((token) => (
@@ -196,8 +279,17 @@ export function MobileVocabularyManager() {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-3">
                         <span className="font-semibold text-slate-900">{token.word}</span>
-                        <Button variant="ghost" size="sm">
-                          <Volume2 className="w-3 h-3" />
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={isReading && currentReadingWord === token.word ? stopReading : () => speakWord(token.word)}
+                          className={isReading && currentReadingWord === token.word ? "text-red-600" : ""}
+                        >
+                          {isReading && currentReadingWord === token.word ? (
+                            <Pause className="w-3 h-3" />
+                          ) : (
+                            <Volume2 className="w-3 h-3" />
+                          )}
                         </Button>
                       </div>
                       <Badge className={getDifficultyColor(token.difficulty)}>{token.difficulty}</Badge>

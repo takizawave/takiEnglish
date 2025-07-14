@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import {
   TrendingUp,
   FileText,
-  Camera,
   BookOpen,
   Clock,
   MoreHorizontal,
@@ -30,7 +29,7 @@ interface AdaptiveBottomNavProps {
 const mainNavItems = [
   { id: "dashboard", label: "Home", icon: TrendingUp },
   { id: "article", label: "Article", icon: FileText },
-  { id: "ocr", label: "Scan", icon: Camera },
+
   { id: "vocab", label: "Vocab", icon: BookOpen },
 ]
 

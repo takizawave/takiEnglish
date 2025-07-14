@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { FileText, Camera, Loader2, CheckCircle, Mic, Type, Link, BookOpen, Target, Clock } from "lucide-react"
+import { FileText, Loader2, CheckCircle, Mic, Type, Link, BookOpen, Target, Clock } from "lucide-react"
 
 interface ProcessedArticle {
   title: string
@@ -38,7 +38,7 @@ interface ProcessedArticle {
 }
 
 export function MobileArticleProcessor() {
-  const [inputMethod, setInputMethod] = useState<"text" | "camera" | "voice" | "url">("text")
+  const [inputMethod, setInputMethod] = useState<"text" | "voice" | "url">("text")
   const [rawData, setRawData] = useState("")
   const [articleTitle, setArticleTitle] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
@@ -46,51 +46,7 @@ export function MobileArticleProcessor() {
   const [isRecording, setIsRecording] = useState(false)
   const [processedResult, setProcessedResult] = useState<ProcessedArticle | null>(null)
 
-  const handleCameraCapture = () => {
-    // Simulate camera capture with the Karri Saarinen article
-    setRawData(`Karri Saarinen's 10 rules for crafting products that stand out
 
-Karri Saarinen, CEO and Co-founder of Linear
-
-As CEO and Co-founder of software development platform Linear, Karri has built his success by making impenetrable quality his differentiator in a crowded startup market. His approach offers an alternative to the Zuckerberg "move fast and break things" mantra, which may have worked years ago but no longer resonates in today's more mature, design-conscious market.
-
-This focus on craft solved what Karri calls a startup's biggest challenge: getting people to notice and care. For Linear, the solution was to lean into craft. "We started with quality," says Karri. "Then we learned that people actually noticed, because it's a rare approach—especially for startups."
-
-Here are Karri's 10 rules for building with craft:
-
-1. Commit to quality at the leadership level
-If you want to build a culture of quality, you need buy-in from the top. You have to set the tone that craft is the most important priority for teams to follow. This high-level commitment creates a permission structure to build craft into everything your company does.
-
-2. When it comes to building teams, go small and aim high
-The more people you have, the more opinions and deliberation you introduce, which dilutes the quality of the execution. By contrast, small, high quality teams produce good work, quickly. Hire craft-oriented people who already produce great work.
-
-3. Do away with handoff
-A commitment to quality is all about being able to connect the dots. An over-specialized team creates silos. At Linear, we have connected teams in which everyone is responsible for the quality. There's no "handoff to dev." You're never off the hook.
-
-4. Resist creating specialized product teams
-Avoid too many defined product teams. Companies tend to create these teams to simplify organization for leadership, but it ultimately creates artificial quality and culture silos. At Linear, we rotate responsibilities to keep ideas fresh.
-
-5. Consider the spec your baseline minimum viable product, not your goal
-Today's startup market, full of high quality competitors, requires excellence to stand out. A great product requires someone to put more care into it than necessary. For quality, you need a team that views the spec as the baseline, not the finish line.
-
-6. Quality is not perfection
-All of a product's details need to be correct before public release. But that doesn't mean it has to be perfect. It's fine to start with something rough and iterate toward polished craft. Just don't show it to customers before it passes your quality bar.
-
-7. The best design is opinionated
-You can only create a great product if you design for someone in particular. It's nearly impossible to design a product for everyone. The more specific your product's purpose, the better it will perform for its intended use.
-
-8. The simplest way to increase quality is to reduce scope
-People who find quality difficult are typically trying to do too much. If you can't do everything well, start by doing less, and take on projects piece by piece. Quality isn't binary—it's about continuously refining a product to meet a standard.
-
-9. Don't get locked into one way of doing things
-We don't have a singular process. Instead, we establish values and principles so that team members think about what they're building and why. We push direct responsibility onto the team, giving them the freedom to make decisions.
-
-10. Data can be a crutch
-At Linear, we don't make decisions based on data or experiments. To design with craft, you must develop and trust your intuition. Quality is hard to measure, so you must be comfortable making decisions without data as your guide.
-
-To provide the best experience, you must surprise users. You can't expect data—or even people themselves—to tell you how. Success depends on hiring people who care about the craft and can make informed decisions based on their expertise.`)
-    setArticleTitle("Karri Saarinen's 10 Rules for Crafting Products That Stand Out")
-  }
 
   const handleVoiceInput = () => {
     setIsRecording(!isRecording)
@@ -358,14 +314,7 @@ To provide the best experience, you must surprise users. You can't expect data�
               <Type className="w-6 h-6" />
               <span className="text-sm">Type Text</span>
             </Button>
-            <Button
-              variant={inputMethod === "camera" ? "default" : "outline"}
-              className="h-20 flex flex-col space-y-2"
-              onClick={() => setInputMethod("camera")}
-            >
-              <Camera className="w-6 h-6" />
-              <span className="text-sm">Camera</span>
-            </Button>
+
             <Button
               variant={inputMethod === "voice" ? "default" : "outline"}
               className="h-20 flex flex-col space-y-2"
@@ -407,17 +356,7 @@ To provide the best experience, you must surprise users. You can't expect data�
             />
           )}
 
-          {inputMethod === "camera" && (
-            <div className="text-center space-y-4">
-              <div className="w-full h-40 bg-slate-100 rounded-lg flex items-center justify-center">
-                <Camera className="w-12 h-12 text-slate-400" />
-              </div>
-              <Button onClick={handleCameraCapture} className="w-full">
-                <Camera className="w-4 h-4 mr-2" />
-                Load Sample Article (Karri Saarinen)
-              </Button>
-            </div>
-          )}
+
 
           {inputMethod === "voice" && (
             <div className="text-center space-y-4">

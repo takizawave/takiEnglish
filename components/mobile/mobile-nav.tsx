@@ -8,13 +8,11 @@ import {
   Menu,
   TrendingUp,
   FileText,
-  Camera,
   MessageSquare,
   BookOpen,
   Clock,
   GitBranch,
   Settings,
-  Crown,
 } from "lucide-react"
 
 interface MobileNavProps {
@@ -26,7 +24,7 @@ interface MobileNavProps {
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: TrendingUp },
   { id: "article", label: "Article Processor", icon: FileText },
-  { id: "ocr", label: "OCR Input", icon: Camera },
+
   { id: "lint", label: "Grammar Lint", icon: MessageSquare },
   { id: "vocab", label: "Vocabulary", icon: BookOpen },
   { id: "review", label: "Review", icon: Clock },
@@ -58,7 +56,7 @@ export function MobileNav({ activeTab, onTabChange, userProfile }: MobileNavProp
                 <FileText className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h2 className="font-bold text-slate-900">Learning Platform</h2>
+                <h2 className="font-bold text-slate-900">Atomic Language</h2>
                 <p className="text-xs text-slate-600">v0.91</p>
               </div>
             </div>
@@ -66,20 +64,11 @@ export function MobileNav({ activeTab, onTabChange, userProfile }: MobileNavProp
             {userProfile && (
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-full overflow-hidden">
-                  <img src="/images/takizawave-avatar.jpg" alt="takizawave" className="w-full h-full object-cover" />
+                  <img src="/images/takizawave-avatar.jpg" alt="Atomic Language" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium text-sm text-slate-900">{userProfile.full_name || "takizawave"}</p>
-                  <Badge
-                    variant="outline"
-                    className={`text-xs ${
-                      userProfile.subscription_tier === "free"
-                        ? "bg-gray-50 text-gray-700"
-                        : "bg-green-50 text-green-700"
-                    }`}
-                  >
-                    {userProfile.subscription_tier === "free" ? "Free Plan" : "Pro Plan"}
-                  </Badge>
+                  <p className="font-medium text-sm text-slate-900">{userProfile.full_name || "Atomic Language"}</p>
+
                 </div>
               </div>
             )}
@@ -115,12 +104,7 @@ export function MobileNav({ activeTab, onTabChange, userProfile }: MobileNavProp
               <Settings className="w-4 h-4 mr-3" />
               Settings
             </Button>
-            {userProfile?.subscription_tier === "free" && (
-              <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600">
-                <Crown className="w-4 h-4 mr-2" />
-                Upgrade to Pro
-              </Button>
-            )}
+
           </div>
         </div>
       </SheetContent>

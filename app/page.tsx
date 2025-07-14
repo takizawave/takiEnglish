@@ -11,7 +11,7 @@ import { MobileDashboard } from "@/components/mobile/mobile-dashboard"
 import { MobileArticleProcessor } from "@/components/mobile/mobile-article-processor"
 import { MobileVocabularyManager } from "@/components/mobile/mobile-vocabulary-manager"
 import { MobileProgressDashboard } from "@/components/mobile/mobile-progress-dashboard"
-import { OCRInput } from "@/components/ocr-input"
+
 import { GrammarLint } from "@/components/grammar-lint"
 import { ReviewSystem } from "@/components/review-system"
 import { BuildLog } from "@/components/build-log"
@@ -21,15 +21,15 @@ import { ArticleProcessor } from "@/components/article-processor"
 import { InteractiveReading } from "@/components/learning-materials/interactive-reading"
 import { PronunciationTrainer } from "@/components/learning-materials/pronunciation-trainer"
 import { WritingAssistant } from "@/components/learning-materials/writing-assistant"
+import { TextToSpeech } from "@/components/ui/text-to-speech"
 
 export default function LearningPlatformMobile() {
   const [activeTab, setActiveTab] = useState("dashboard")
   const [todayProgress, setTodayProgress] = useState(65)
 
-  // Mock user profile
+    // Mock user profile
   const userProfile = {
-    full_name: "takizawave",
-    subscription_tier: "free",
+    full_name: "Atomic Language",
   }
 
   const handleTabChange = (tab: string) => {
@@ -54,9 +54,7 @@ export default function LearningPlatformMobile() {
                   <ArticleProcessor />
                 </TabsContent>
 
-                <TabsContent value="ocr" className="mt-0">
-                  <OCRInput />
-                </TabsContent>
+
 
                 <TabsContent value="lint" className="mt-0">
                   <GrammarLint />
@@ -76,6 +74,10 @@ export default function LearningPlatformMobile() {
 
                 <TabsContent value="writing" className="mt-0">
                   <WritingAssistant />
+                </TabsContent>
+
+                <TabsContent value="tts" className="mt-0">
+                  <TextToSpeech />
                 </TabsContent>
 
                 <TabsContent value="review" className="mt-0">
@@ -114,9 +116,7 @@ export default function LearningPlatformMobile() {
               <MobileArticleProcessor />
             </TabsContent>
 
-            <TabsContent value="ocr">
-              <OCRInput />
-            </TabsContent>
+
 
             <TabsContent value="lint">
               <GrammarLint />
@@ -136,6 +136,10 @@ export default function LearningPlatformMobile() {
 
             <TabsContent value="writing">
               <WritingAssistant />
+            </TabsContent>
+
+            <TabsContent value="tts">
+              <TextToSpeech />
             </TabsContent>
 
             <TabsContent value="review">

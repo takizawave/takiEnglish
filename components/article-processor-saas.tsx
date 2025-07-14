@@ -7,8 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { FileText, Loader2, CheckCircle, Lock, Crown } from "lucide-react"
+import { FileText, Loader2, CheckCircle } from "lucide-react"
 import { useAuth } from "@/components/auth/auth-provider"
 import { supabase } from "@/lib/supabase"
 
@@ -23,21 +22,11 @@ export function ArticleProcessorSaaS() {
   const [savedArticles, setSavedArticles] = useState<any[]>([])
 
   const getUsageLimit = () => {
-    switch (profile?.subscription_tier) {
-      case "free":
-        return 5
-      case "pro":
-        return Number.POSITIVE_INFINITY
-      case "enterprise":
-        return Number.POSITIVE_INFINITY
-      default:
-        return 5
-    }
+    return Number.POSITIVE_INFINITY
   }
 
   const canProcessArticle = () => {
-    const limit = getUsageLimit()
-    return limit === Number.POSITIVE_INFINITY || monthlyUsage < limit
+    return true
   }
 
   useEffect(() => {
@@ -77,7 +66,7 @@ export function ArticleProcessorSaaS() {
   }
 
   const processArticle = async () => {
-    if (!user || !rawData.trim() || !canProcessArticle()) return
+    if (!user || !rawData.trim()) return
 
     setIsProcessing(true)
     setProgress(0)
@@ -206,9 +195,7 @@ export function ArticleProcessorSaaS() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg">Monthly Usage</CardTitle>
-            <Badge variant={profile?.subscription_tier === "free" ? "secondary" : "default"}>
-              {profile?.subscription_tier?.toUpperCase() || "FREE"}
-            </Badge>
+
           </div>
         </CardHeader>
         <CardContent>
@@ -219,12 +206,7 @@ export function ArticleProcessorSaaS() {
                 {monthlyUsage} / {usageLimit === Number.POSITIVE_INFINITY ? "∞" : usageLimit}
               </span>
             </div>
-            {usageLimit !== Number.POSITIVE_INFINITY && <Progress value={usagePercentage} className="h-2" />}
-            {usagePercentage > 80 && usageLimit !== Number.POSITIVE_INFINITY && (
-              <p className="text-xs text-orange-600">
-                You're approaching your monthly limit. Consider upgrading for unlimited processing.
-              </p>
-            )}
+
           </div>
         </CardContent>
       </Card>
@@ -241,18 +223,7 @@ export function ArticleProcessorSaaS() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {!canProcessArticle() && (
-            <Alert>
-              <Lock className="w-4 h-4" />
-              <AlertDescription>
-                You've reached your monthly limit of {usageLimit} articles.
-                <Button variant="link" className="p-0 h-auto ml-1">
-                  Upgrade to Pro
-                </Button>{" "}
-                for unlimited processing.
-              </AlertDescription>
-            </Alert>
-          )}
+
 
           <div className="space-y-4">
             <div>
@@ -261,7 +232,6 @@ export function ArticleProcessorSaaS() {
                 placeholder="Enter article title..."
                 value={articleTitle}
                 onChange={(e) => setArticleTitle(e.target.value)}
-                disabled={!canProcessArticle()}
               />
             </div>
 
@@ -272,7 +242,6 @@ export function ArticleProcessorSaaS() {
                 value={rawData}
                 onChange={(e) => setRawData(e.target.value)}
                 className="min-h-[200px] font-mono text-sm"
-                disabled={!canProcessArticle()}
               />
               <div className="flex justify-between items-center mt-2 text-xs text-slate-500">
                 <span>{rawData.split(" ").filter((word) => word.length > 0).length} words</span>
@@ -282,18 +251,13 @@ export function ArticleProcessorSaaS() {
 
             <Button
               onClick={processArticle}
-              disabled={isProcessing || !rawData.trim() || !canProcessArticle()}
+              disabled={isProcessing || !rawData.trim()}
               className="w-full"
             >
               {isProcessing ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
                   Processing Article...
-                </>
-              ) : !canProcessArticle() ? (
-                <>
-                  <Crown className="w-4 h-4 mr-2" />
-                  Upgrade Required
                 </>
               ) : (
                 <>

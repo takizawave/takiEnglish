@@ -6,13 +6,16 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Mic, MicOff, Volume2, Play, Pause, RotateCcw, Target, Award, CheckCircle, XCircle } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Mic, MicOff, Volume2, Play, Pause, RotateCcw, Target, Award, CheckCircle, XCircle, Search, Filter } from "lucide-react"
 
 interface Phoneme {
   symbol: string
   description: string
   examples: string[]
   difficulty: "easy" | "medium" | "hard"
+  category: "consonants" | "vowels" | "diphthongs" | "other"
   audioUrl?: string
 }
 
@@ -34,44 +37,111 @@ interface PronunciationScore {
 
 export function PronunciationTrainer() {
   const [isRecording, setIsRecording] = useState(false)
-  const [currentExercise, setCurrentExercise] = useState<"phonemes" | "words" | "sentences">("phonemes")
+  const [currentExercise, setCurrentExercise] = useState<"phonemes" | "words" | "sentences" | "all-phonemes">("phonemes")
   const [currentIndex, setCurrentIndex] = useState(0)
   const [scores, setScores] = useState<PronunciationScore[]>([])
   const [showResults, setShowResults] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState<string>("all")
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all")
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
+
+  // Comprehensive list of all phonemes
+  const allPhonemes: Phoneme[] = [
+    // Consonants
+    { symbol: "/p/", description: "Voiceless bilabial plosive", examples: ["pen", "copy", "happen"], difficulty: "easy", category: "consonants" },
+    { symbol: "/b/", description: "Voiced bilabial plosive", examples: ["bad", "job", "baby"], difficulty: "easy", category: "consonants" },
+    { symbol: "/t/", description: "Voiceless alveolar plosive", examples: ["tea", "native", "bet"], difficulty: "easy", category: "consonants" },
+    { symbol: "/d/", description: "Voiced alveolar plosive", examples: ["day", "ladder", "odd"], difficulty: "easy", category: "consonants" },
+    { symbol: "/k/", description: "Voiceless velar plosive", examples: ["key", "cock", "skin"], difficulty: "easy", category: "consonants" },
+    { symbol: "/g/", description: "Voiced velar plosive", examples: ["get", "gig", "ghost"], difficulty: "easy", category: "consonants" },
+    { symbol: "/f/", description: "Voiceless labiodental fricative", examples: ["fat", "coffee", "rough"], difficulty: "easy", category: "consonants" },
+    { symbol: "/v/", description: "Voiced labiodental fricative", examples: ["view", "heavy", "move"], difficulty: "easy", category: "consonants" },
+    { symbol: "/θ/", description: "Voiceless dental fricative", examples: ["thin", "ether", "bath"], difficulty: "hard", category: "consonants" },
+    { symbol: "/ð/", description: "Voiced dental fricative", examples: ["this", "either", "smooth"], difficulty: "hard", category: "consonants" },
+    { symbol: "/s/", description: "Voiceless alveolar fricative", examples: ["see", "city", "pass"], difficulty: "easy", category: "consonants" },
+    { symbol: "/z/", description: "Voiced alveolar fricative", examples: ["zoo", "easy", "buzz"], difficulty: "easy", category: "consonants" },
+    { symbol: "/ʃ/", description: "Voiceless postalveolar fricative", examples: ["ship", "sure", "nation"], difficulty: "medium", category: "consonants" },
+    { symbol: "/ʒ/", description: "Voiced postalveolar fricative", examples: ["vision", "pleasure", "beige"], difficulty: "hard", category: "consonants" },
+    { symbol: "/h/", description: "Voiceless glottal fricative", examples: ["hot", "ahead", "who"], difficulty: "easy", category: "consonants" },
+    { symbol: "/m/", description: "Bilabial nasal", examples: ["man", "hammer", "sum"], difficulty: "easy", category: "consonants" },
+    { symbol: "/n/", description: "Alveolar nasal", examples: ["no", "tenth", "sun"], difficulty: "easy", category: "consonants" },
+    { symbol: "/ŋ/", description: "Velar nasal", examples: ["ring", "anger", "thanks"], difficulty: "medium", category: "consonants" },
+    { symbol: "/l/", description: "Alveolar lateral approximant", examples: ["left", "bell", "table"], difficulty: "easy", category: "consonants" },
+    { symbol: "/r/", description: "Alveolar approximant", examples: ["right", "sorry", "arrive"], difficulty: "medium", category: "consonants" },
+    { symbol: "/j/", description: "Palatal approximant", examples: ["yes", "use", "beauty"], difficulty: "easy", category: "consonants" },
+    { symbol: "/w/", description: "Labial-velar approximant", examples: ["wet", "one", "when"], difficulty: "easy", category: "consonants" },
+    { symbol: "/tʃ/", description: "Voiceless postalveolar affricate", examples: ["chair", "nature", "teach"], difficulty: "medium", category: "consonants" },
+    { symbol: "/dʒ/", description: "Voiced postalveolar affricate", examples: ["job", "edge", "judge"], difficulty: "medium", category: "consonants" },
+
+    // Vowels
+    { symbol: "/iː/", description: "Close front unrounded vowel", examples: ["see", "meet", "feel"], difficulty: "easy", category: "vowels" },
+    { symbol: "/ɪ/", description: "Near-close near-front unrounded vowel", examples: ["sit", "hit", "fish"], difficulty: "medium", category: "vowels" },
+    { symbol: "/e/", description: "Close-mid front unrounded vowel", examples: ["bed", "head", "said"], difficulty: "medium", category: "vowels" },
+    { symbol: "/æ/", description: "Near-open front unrounded vowel", examples: ["cat", "hat", "map"], difficulty: "medium", category: "vowels" },
+    { symbol: "/ɑː/", description: "Open back unrounded vowel", examples: ["father", "start", "hard"], difficulty: "easy", category: "vowels" },
+    { symbol: "/ɒ/", description: "Open back rounded vowel", examples: ["lot", "odd", "wash"], difficulty: "medium", category: "vowels" },
+    { symbol: "/ɔː/", description: "Open-mid back rounded vowel", examples: ["law", "north", "war"], difficulty: "medium", category: "vowels" },
+    { symbol: "/ʊ/", description: "Near-close near-back rounded vowel", examples: ["put", "foot", "good"], difficulty: "medium", category: "vowels" },
+    { symbol: "/uː/", description: "Close back rounded vowel", examples: ["too", "food", "moon"], difficulty: "easy", category: "vowels" },
+    { symbol: "/ʌ/", description: "Open-mid back unrounded vowel", examples: ["cup", "luck", "bus"], difficulty: "medium", category: "vowels" },
+    { symbol: "/ɜː/", description: "Open-mid central unrounded vowel", examples: ["bird", "girl", "work"], difficulty: "hard", category: "vowels" },
+    { symbol: "/ə/", description: "Mid central vowel (schwa)", examples: ["about", "common", "standard"], difficulty: "hard", category: "vowels" },
+
+    // Diphthongs
+    { symbol: "/eɪ/", description: "Closing diphthong", examples: ["face", "day", "break"], difficulty: "medium", category: "diphthongs" },
+    { symbol: "/aɪ/", description: "Closing diphthong", examples: ["price", "high", "try"], difficulty: "medium", category: "diphthongs" },
+    { symbol: "/ɔɪ/", description: "Closing diphthong", examples: ["boy", "choice", "noise"], difficulty: "medium", category: "diphthongs" },
+    { symbol: "/əʊ/", description: "Closing diphthong", examples: ["goat", "show", "no"], difficulty: "medium", category: "diphthongs" },
+    { symbol: "/aʊ/", description: "Closing diphthong", examples: ["mouth", "now", "how"], difficulty: "medium", category: "diphthongs" },
+    { symbol: "/ɪə/", description: "Centering diphthong", examples: ["near", "here", "weird"], difficulty: "hard", category: "diphthongs" },
+    { symbol: "/eə/", description: "Centering diphthong", examples: ["square", "fair", "various"], difficulty: "hard", category: "diphthongs" },
+    { symbol: "/ʊə/", description: "Centering diphthong", examples: ["poor", "jury", "cure"], difficulty: "hard", category: "diphthongs" },
+
+    // Other symbols
+    { symbol: "/ˈ/", description: "Primary stress", examples: ["ˈhappy", "ˈteacher", "ˈstudent"], difficulty: "medium", category: "other" },
+    { symbol: "/ˌ/", description: "Secondary stress", examples: ["ˌunderˈstand", "ˌinterˈnational"], difficulty: "hard", category: "other" },
+    { symbol: "/ː/", description: "Long vowel marker", examples: ["iː", "uː", "ɑː"], difficulty: "easy", category: "other" },
+    { symbol: "/ˈ/", description: "Syllable boundary", examples: ["ˈsyl.la.ble", "ˈpho.ne.mic"], difficulty: "medium", category: "other" }
+  ]
 
   const phonemes: Phoneme[] = [
     {
       symbol: "/θ/",
       description: "Voiceless dental fricative (th in 'think')",
       examples: ["think", "three", "bath"],
-      difficulty: "hard"
+      difficulty: "hard",
+      category: "consonants"
     },
     {
       symbol: "/ð/",
       description: "Voiced dental fricative (th in 'this')",
       examples: ["this", "that", "father"],
-      difficulty: "hard"
+      difficulty: "hard",
+      category: "consonants"
     },
     {
       symbol: "/æ/",
       description: "Near-open front unrounded vowel (a in 'cat')",
       examples: ["cat", "hat", "map"],
-      difficulty: "medium"
+      difficulty: "medium",
+      category: "vowels"
     },
     {
       symbol: "/ʌ/",
       description: "Open-mid back unrounded vowel (u in 'cup')",
       examples: ["cup", "luck", "bus"],
-      difficulty: "medium"
+      difficulty: "medium",
+      category: "vowels"
     },
     {
       symbol: "/ɜː/",
       description: "Open-mid central unrounded vowel (ir in 'bird')",
       examples: ["bird", "girl", "work"],
-      difficulty: "hard"
+      difficulty: "hard",
+      category: "vowels"
     }
   ]
 
@@ -197,6 +267,25 @@ export function PronunciationTrainer() {
         return words
       case "sentences":
         return sentences
+      case "all-phonemes":
+        let filteredItems = allPhonemes;
+
+        if (searchTerm) {
+          filteredItems = filteredItems.filter(phoneme =>
+            phoneme.symbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            phoneme.description.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+        }
+
+        if (selectedCategory !== "all") {
+          filteredItems = filteredItems.filter(phoneme => phoneme.category === selectedCategory);
+        }
+
+        if (selectedDifficulty !== "all") {
+          filteredItems = filteredItems.filter(phoneme => phoneme.difficulty === selectedDifficulty);
+        }
+
+        return filteredItems;
       default:
         return phonemes
     }
@@ -239,6 +328,9 @@ export function PronunciationTrainer() {
     setCurrentIndex(0)
     setScores([])
     setShowResults(false)
+    setSearchTerm("")
+    setSelectedCategory("all")
+    setSelectedDifficulty("all")
   }
 
   return (
@@ -254,14 +346,22 @@ export function PronunciationTrainer() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs value={currentExercise} onValueChange={(value) => {
-            setCurrentExercise(value as "phonemes" | "words" | "sentences")
-            resetExercise()
-          }}>
-            <TabsList className="grid w-full grid-cols-3">
+                      <Tabs value={currentExercise} onValueChange={(value) => {
+              setCurrentExercise(value as "phonemes" | "words" | "sentences" | "all-phonemes")
+              setCurrentIndex(0)
+              setScores([])
+              setShowResults(false)
+              if (value === "all-phonemes") {
+                setSearchTerm("")
+                setSelectedCategory("all")
+                setSelectedDifficulty("all")
+              }
+            }}>
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="phonemes">Phonemes</TabsTrigger>
               <TabsTrigger value="words">Words</TabsTrigger>
               <TabsTrigger value="sentences">Sentences</TabsTrigger>
+              <TabsTrigger value="all-phonemes">All Phonemes</TabsTrigger>
             </TabsList>
           </Tabs>
         </CardContent>
@@ -271,25 +371,35 @@ export function PronunciationTrainer() {
         <div className="lg:col-span-2">
           {!showResults ? (
             <Card>
-              <CardHeader>
+        <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>
                     {currentExercise === "phonemes" && "Phoneme Practice"}
                     {currentExercise === "words" && "Word Pronunciation"}
                     {currentExercise === "sentences" && "Sentence Practice"}
+                    {currentExercise === "all-phonemes" && "All Phonemes"}
                   </CardTitle>
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-slate-600">
-                      {currentIndex + 1} of {getCurrentItems().length}
-                    </span>
-                    <Progress 
-                      value={((currentIndex + 1) / getCurrentItems().length) * 100} 
-                      className="w-24"
-                    />
+                    {currentExercise !== "all-phonemes" && (
+                      <>
+                        <span className="text-sm text-slate-600">
+                          {currentIndex + 1} of {getCurrentItems().length}
+                        </span>
+                        <Progress 
+                          value={((currentIndex + 1) / getCurrentItems().length) * 100} 
+                          className="w-24"
+                        />
+                      </>
+                    )}
+                    {currentExercise === "all-phonemes" && (
+                      <span className="text-sm text-slate-600">
+                        {getCurrentItems().length} phonemes found
+                      </span>
+                    )}
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
                 {currentExercise === "phonemes" && (
                   <div className="text-center space-y-4">
                     <div className="text-6xl font-bold text-blue-600">
@@ -341,35 +451,95 @@ export function PronunciationTrainer() {
                   </div>
                 )}
 
-                <div className="flex justify-center space-x-4">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    onClick={playAudio}
-                    disabled={isPlaying}
-                  >
-                    {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                    <span className="ml-2">Listen</span>
-                  </Button>
-
-                  <Button
-                    size="lg"
-                    onClick={isRecording ? stopRecording : startRecording}
-                    className={isRecording ? "bg-red-600 hover:bg-red-700" : ""}
-                  >
-                    {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-                    <span className="ml-2">
-                      {isRecording ? "Stop Recording" : "Start Recording"}
-                    </span>
-                  </Button>
-                </div>
-
-                {isRecording && (
-                  <div className="text-center">
-                    <div className="animate-pulse text-red-600 font-medium">
-                      Recording... Speak now!
+                {currentExercise === "all-phonemes" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                        <Input
+                          placeholder="Search phonemes..."
+                          className="pl-10"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                      </div>
+                      <Select onValueChange={setSelectedCategory} defaultValue="all">
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Filter by Category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Categories</SelectItem>
+                          <SelectItem value="consonants">Consonants</SelectItem>
+                          <SelectItem value="vowels">Vowels</SelectItem>
+                          <SelectItem value="diphthongs">Diphthongs</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Select onValueChange={setSelectedDifficulty} defaultValue="all">
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Filter by Difficulty" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Difficulties</SelectItem>
+                          <SelectItem value="easy">Easy</SelectItem>
+                          <SelectItem value="medium">Medium</SelectItem>
+                          <SelectItem value="hard">Hard</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {getCurrentItems().map((phoneme, index) => (
+                        <Card key={index} className="p-4 flex items-center justify-between">
+                          <div>
+                            <Badge variant="outline" className="text-xs">{phoneme.category}</Badge>
+                            <div className="text-lg font-mono">{phoneme.symbol}</div>
+                            <p className="text-sm text-slate-700">{phoneme.description}</p>
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {phoneme.examples.map((example, exIndex) => (
+                                <Badge key={exIndex} variant="outline" className="text-xs">{example}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                          <Badge className={getDifficultyColor(phoneme.difficulty)}>{phoneme.difficulty}</Badge>
+                        </Card>
+                      ))}
                     </div>
                   </div>
+                )}
+
+                {currentExercise !== "all-phonemes" && (
+                  <>
+          <div className="flex justify-center space-x-4">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        onClick={playAudio}
+                        disabled={isPlaying}
+                      >
+                        {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                        <span className="ml-2">Listen</span>
+            </Button>
+
+            <Button
+              size="lg"
+                        onClick={isRecording ? stopRecording : startRecording}
+              className={isRecording ? "bg-red-600 hover:bg-red-700" : ""}
+            >
+                        {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                        <span className="ml-2">
+                          {isRecording ? "Stop Recording" : "Start Recording"}
+                        </span>
+            </Button>
+          </div>
+
+          {isRecording && (
+                      <div className="text-center">
+                        <div className="animate-pulse text-red-600 font-medium">
+                          Recording... Speak now!
+                        </div>
+            </div>
+          )}
+                  </>
                 )}
               </CardContent>
             </Card>
@@ -382,7 +552,7 @@ export function PronunciationTrainer() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="text-center">
+                  <div className="text-center">
                   <div className="text-4xl font-bold text-blue-600 mb-2">
                     {calculateAverageScore()}%
                   </div>
@@ -398,10 +568,11 @@ export function PronunciationTrainer() {
                         <div className="text-2xl font-bold text-green-600">
                           {score.overall}%
                         </div>
-                        <div className="text-sm text-slate-600">
+                    <div className="text-sm text-slate-600">
                           {currentExercise === "phonemes" && `Phoneme ${index + 1}`}
                           {currentExercise === "words" && `Word ${index + 1}`}
                           {currentExercise === "sentences" && `Sentence ${index + 1}`}
+                          {currentExercise === "all-phonemes" && `Phoneme ${index + 1}`}
                         </div>
                         <div className="space-y-1">
                           <div className="flex justify-between text-xs">
@@ -519,9 +690,9 @@ export function PronunciationTrainer() {
                 <p className="text-sm text-slate-700">
                   Focus on stress patterns and intonation
                 </p>
-              </div>
-            </CardContent>
-          </Card>
+          </div>
+        </CardContent>
+      </Card>
         </div>
       </div>
     </div>

@@ -15,28 +15,28 @@ const getTabTitle = (activeTab: string) => {
   const titles: { [key: string]: string } = {
     dashboard: "Dashboard",
     article: "Article Processor",
-    ocr: "OCR Input",
+  
     lint: "Grammar Lint",
     vocab: "Vocabulary",
     review: "Review System",
     logs: "Build Logs",
     progress: "Progress",
   }
-  return titles[activeTab] || "Learning Platform"
+      return titles[activeTab] || "Atomic Language"
 }
 
 const getTabDescription = (activeTab: string) => {
   const descriptions: { [key: string]: string } = {
     dashboard: "Overview of your learning progress and quick actions",
     article: "Transform articles into structured learning materials",
-    ocr: "Extract text from images for processing",
+
     lint: "AI-powered grammar checking and suggestions",
     vocab: "Manage your vocabulary tokens with spaced repetition",
     review: "Practice and review your learning materials",
     logs: "View processing history and system logs",
     progress: "Detailed analytics and progress tracking",
   }
-  return descriptions[activeTab] || "Welcome to your learning platform"
+      return descriptions[activeTab] || "Welcome to Atomic Language"
 }
 
 export function DesktopHeader({ activeTab, todayProgress, userProfile }: DesktopHeaderProps) {

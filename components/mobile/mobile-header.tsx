@@ -17,14 +17,14 @@ const getTabTitle = (activeTab: string) => {
   const titles: { [key: string]: string } = {
     dashboard: "Dashboard",
     article: "Article Processor",
-    ocr: "OCR Input",
+  
     lint: "Grammar Lint",
     vocab: "Vocabulary",
     review: "Review System",
     logs: "Build Logs",
     progress: "Progress",
   }
-  return titles[activeTab] || "Learning Platform"
+      return titles[activeTab] || "Atomic Language"
 }
 
 export function MobileHeader({ activeTab, onTabChange, todayProgress, userProfile }: MobileHeaderProps) {
@@ -40,7 +40,7 @@ export function MobileHeader({ activeTab, onTabChange, todayProgress, userProfil
               </div>
               <div>
                 <h1 className="font-bold text-slate-900 text-sm">{getTabTitle(activeTab)}</h1>
-                <p className="text-xs text-slate-500">takizawave Learning Platform</p>
+                <p className="text-xs text-slate-500">Atomic Language</p>
               </div>
             </div>
           </div>

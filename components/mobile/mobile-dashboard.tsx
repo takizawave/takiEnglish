@@ -19,7 +19,7 @@ export function MobileDashboard({ onTabChange }: MobileDashboardProps) {
     { label: "Process Article", icon: "📄", action: "article" },
     { label: "Review Vocab", icon: "📚", action: "vocab" },
     { label: "Grammar Check", icon: "✏️", action: "lint" },
-    { label: "Take Photo", icon: "📷", action: "ocr" },
+
   ]
 
   const recentActivity = [
