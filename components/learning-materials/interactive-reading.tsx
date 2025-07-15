@@ -1659,7 +1659,7 @@ As we look to the future, it's likely that remote work will continue to grow. Co
                       </Badge>
                     </div>
                     <div className="space-y-2 text-sm text-slate-600">
-                      <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4">
                         <span>{passage.wordCount} words</span>
                         <span>•</span>
                         <span>{passage.estimatedTime} min read</span>
@@ -1693,7 +1693,7 @@ As we look to the future, it's likely that remote work will continue to grow. Co
                     Article {readingPassages.findIndex(p => p.id === selectedPassage.id) + 1} of {readingPassages.length}
                   </div>
                   <div className="flex space-x-2">
-                    <Button
+              <Button
                       variant="outline"
                       size="sm"
                       onClick={() => {
@@ -1709,7 +1709,7 @@ As we look to the future, it's likely that remote work will continue to grow. Co
                       disabled={readingPassages.length <= 1}
                     >
                       ← Previous
-                    </Button>
+              </Button>
                     <Button
                       variant="outline"
                       size="sm"
@@ -1726,7 +1726,7 @@ As we look to the future, it's likely that remote work will continue to grow. Co
                       disabled={readingPassages.length <= 1}
                     >
                       Next →
-                    </Button>
+              </Button>
                   </div>
                 </div>
               </div>
@@ -1781,7 +1781,7 @@ As we look to the future, it's likely that remote work will continue to grow. Co
                       className={isMuted ? "bg-gray-50 text-gray-700 border-gray-200" : ""}
                     >
                       {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                    </Button>
+              </Button>
             </div>
                 </CardHeader>
                 <CardContent>
@@ -1816,17 +1816,17 @@ As we look to the future, it's likely that remote work will continue to grow. Co
             </TabsContent>
 
             <TabsContent value="quiz" className="space-y-4">
-              <Card>
-                <CardHeader>
+      <Card>
+        <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <BookOpen className="w-4 h-4" />
                     <span>Vocabulary Review</span>
                   </CardTitle>
-                  <CardDescription>
+          <CardDescription>
                     Review all vocabulary from this passage. Click on words to hear pronunciation.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {selectedPassage.vocabulary.map((vocab, index) => (
                       <div 
@@ -1842,7 +1842,7 @@ As we look to the future, it's likely that remote work will continue to grow. Co
                           <Badge className={getDifficultyColor(vocab.difficulty)}>
                             {vocab.difficulty}
                           </Badge>
-                        </div>
+                  </div>
                         <p className="text-sm text-slate-600 mb-2">[{vocab.pronunciation}]</p>
                         <p className="text-sm text-slate-700 mb-2">{vocab.definition}</p>
                         <div className="bg-slate-50 p-2 rounded text-sm italic text-slate-600">
@@ -1860,9 +1860,9 @@ As we look to the future, it's likely that remote work will continue to grow. Co
                       <li>• Practice using these words in your own sentences</li>
                       <li>• Return to the reading to see words in context</li>
                     </ul>
-                  </div>
-                </CardContent>
-              </Card>
+                </div>
+              </CardContent>
+            </Card>
             </TabsContent>
             </Tabs>
         </div>

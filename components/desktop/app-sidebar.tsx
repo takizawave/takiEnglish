@@ -28,6 +28,7 @@ import {
   Mic,
   PenTool,
   Volume2,
+  Calendar,
 } from "lucide-react"
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
@@ -38,6 +39,7 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 
 const mainNavItems = [
   { id: "dashboard", label: "Dashboard", icon: TrendingUp },
+  { id: "today", label: "Today's Study", icon: Calendar },
   { id: "article", label: "Article Processor", icon: FileText },
   { id: "vocab", label: "Vocabulary", icon: BookOpen },
   { id: "grammar", label: "Grammar", icon: BookOpen },

@@ -23,6 +23,7 @@ import { PronunciationTrainer } from "@/components/learning-materials/pronunciat
 import { WritingAssistant } from "@/components/learning-materials/writing-assistant"
 import { TextToSpeech } from "@/components/ui/text-to-speech"
 import { ComprehensiveGrammar } from "@/components/learning-materials/comprehensive-grammar"
+import { TodaysStudy } from "@/components/learning-materials/todays-study"
 
 export default function LearningPlatformMobile() {
   const [activeTab, setActiveTab] = useState("dashboard")
@@ -49,6 +50,10 @@ export default function LearningPlatformMobile() {
               <Tabs value={activeTab} onValueChange={handleTabChange}>
                 <TabsContent value="dashboard" className="mt-0">
                   <ProgressDashboard />
+                </TabsContent>
+
+                <TabsContent value="today" className="mt-0">
+                  <TodaysStudy />
                 </TabsContent>
 
                 <TabsContent value="article" className="mt-0">
@@ -115,6 +120,10 @@ export default function LearningPlatformMobile() {
           <Tabs value={activeTab} onValueChange={handleTabChange}>
             <TabsContent value="dashboard">
               <MobileDashboard onTabChange={handleTabChange} />
+            </TabsContent>
+
+            <TabsContent value="today">
+              <TodaysStudy />
             </TabsContent>
 
             <TabsContent value="article">

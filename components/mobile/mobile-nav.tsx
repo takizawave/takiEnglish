@@ -13,6 +13,7 @@ import {
   Clock,
   GitBranch,
   Settings,
+  Calendar,
 } from "lucide-react"
 
 interface MobileNavProps {
@@ -23,6 +24,7 @@ interface MobileNavProps {
 
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: TrendingUp },
+  { id: "today", label: "Today's Study", icon: Calendar },
   { id: "article", label: "Article Processor", icon: FileText },
   { id: "vocab", label: "Vocabulary", icon: BookOpen },
   { id: "grammar", label: "Grammar", icon: BookOpen },

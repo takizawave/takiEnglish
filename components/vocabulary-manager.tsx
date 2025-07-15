@@ -981,10 +981,10 @@ export function VocabularyManager() {
 
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="w-full sm:w-auto">
-                <Plus className="w-4 h-4 mr-2" />
-                Add New Token
-              </Button>
+          <Button className="w-full sm:w-auto">
+            <Plus className="w-4 h-4 mr-2" />
+            Add New Token
+          </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px]">
               <DialogHeader>
@@ -1179,7 +1179,7 @@ export function VocabularyManager() {
                     {isReading && currentReadingWord === token.word ? (
                       <Pause className="w-4 h-4" />
                     ) : (
-                      <Volume2 className="w-4 h-4" />
+                  <Volume2 className="w-4 h-4" />
                     )}
                   </Button>
                   <Button 
@@ -1189,7 +1189,7 @@ export function VocabularyManager() {
                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
                   >
                     <X className="w-4 h-4" />
-                  </Button>
+                </Button>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
