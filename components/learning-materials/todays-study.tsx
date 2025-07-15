@@ -135,6 +135,27 @@ const studyItems: StudyItem[] = [
   }
 ]
 
+const getDifficultyColor = (difficulty: string) => {
+  switch (difficulty) {
+    case 'beginner': return 'bg-green-100 text-green-800'
+    case 'intermediate': return 'bg-yellow-100 text-yellow-800'
+    case 'advanced': return 'bg-red-100 text-red-800'
+    default: return 'bg-gray-100 text-gray-800'
+  }
+}
+
+const getTypeIcon = (type: string) => {
+  switch (type) {
+    case 'vocabulary': return <BookOpen className="w-4 h-4" />
+    case 'grammar': return <PenTool className="w-4 h-4" />
+    case 'reading': return <Eye className="w-4 h-4" />
+    case 'listening': return <Volume2 className="w-4 h-4" />
+    case 'speaking': return <Mic className="w-4 h-4" />
+    case 'writing': return <PenTool className="w-4 h-4" />
+    default: return <BookOpen className="w-4 h-4" />
+  }
+}
+
 export function TodaysStudy() {
   const [currentItem, setCurrentItem] = useState<StudyItem | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -222,27 +243,6 @@ export function TodaysStudy() {
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60
     return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
-
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'beginner': return 'bg-green-100 text-green-800'
-      case 'intermediate': return 'bg-yellow-100 text-yellow-800'
-      case 'advanced': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
-    }
-  }
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'vocabulary': return <BookOpen className="w-4 h-4" />
-      case 'grammar': return <PenTool className="w-4 h-4" />
-      case 'reading': return <Eye className="w-4 h-4" />
-      case 'listening': return <Volume2 className="w-4 h-4" />
-      case 'speaking': return <Mic className="w-4 h-4" />
-      case 'writing': return <PenTool className="w-4 h-4" />
-      default: return <BookOpen className="w-4 h-4" />
-    }
   }
 
   if (currentItem) {
@@ -563,6 +563,34 @@ export function TodaysStudy() {
           </div>
         </CardContent>
       </Card>
+    </div>
+  )
+} 
+
+export function TodaysFocusFullPage() {
+  return (
+    <div className="space-y-4">
+      <h2 className="text-xl font-bold mb-2">Today's Focus</h2>
+      {studyItems.map((item) => (
+        <Card key={item.id} className="border rounded-lg p-3 bg-white shadow-sm">
+          <CardContent className="p-0">
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-2">
+                {getTypeIcon(item.type)}
+                <span className="font-semibold text-base">{item.title}</span>
+              </div>
+              <Badge className={getDifficultyColor(item.difficulty)}>{item.difficulty}</Badge>
+            </div>
+            <div className="text-slate-700 mb-1 text-sm">{item.content}</div>
+            <div className="flex flex-wrap gap-2 text-slate-500 text-xs mb-1">
+              <span>{item.timeEstimate} min</span>
+              {item.tags.map((tag) => (
+                <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   )
 } 

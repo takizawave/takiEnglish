@@ -1,115 +1,78 @@
-"use client"
-
-import React, { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { notFound } from "next/navigation"
+import { readingPassages, WordDefinition, ReadingPassage } from "@/lib/reading-passages"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { BookOpen, Eye, CheckCircle, XCircle, Volume2, VolumeX, Target, ArrowLeft, ArrowRight } from "lucide-react"
-import { readingPassages, WordDefinition, ReadingPassage } from "@/lib/reading-passages"
+import { Button } from "@/components/ui/button"
+import { BookOpen, Eye, Volume2, VolumeX, Target } from "lucide-react"
+import { useState } from "react"
 
-export function InteractiveReading() {
+function getDifficultyColor(difficulty: string) {
+  switch (difficulty) {
+    case "beginner":
+      return "bg-green-100 text-green-800 border-green-200"
+    case "intermediate":
+      return "bg-yellow-100 text-yellow-800 border-yellow-200"
+    case "advanced":
+      return "bg-red-100 text-red-800 border-red-200"
+    default:
+      return "bg-gray-100 text-gray-800 border-gray-200"
+  }
+}
+
+function highlightVocabulary(text: string, passage: ReadingPassage, onWordClick: (word: string) => void) {
+  const words = text.split(' ')
+  return words.map((word, index) => {
+    const cleanWord = word.replace(/[.,!?;:]/g, '')
+    const isVocabulary = passage.vocabulary.some(v => v.word.toLowerCase() === cleanWord.toLowerCase())
+    if (isVocabulary) {
+      return (
+        <span
+          key={index}
+          className="cursor-pointer text-blue-600 hover:text-blue-800 underline decoration-dotted"
+          onClick={() => onWordClick(cleanWord)}
+        >
+          {word}
+        </span>
+      )
+    }
+    return <span key={index}>{word}</span>
+  }).reduce((prev, curr, index) => {
+    return index < words.length - 1 ? [prev, curr, ' '] : [prev, curr]
+  }, [] as React.ReactNode[])
+}
+
+export default function InteractiveReadingDetailPage({ params }: { params: { id: string } }) {
+  const passage = readingPassages.find(p => p.id === params.id)
   const [selectedWord, setSelectedWord] = useState<WordDefinition | null>(null)
   const [showDefinitions, setShowDefinitions] = useState(false)
-  const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [userAnswers, setUserAnswers] = useState<number[]>([])
-  const [showResults, setShowResults] = useState(false)
-  const [selectedPassage, setSelectedPassage] = useState<ReadingPassage | null>(null)
   const [isReading, setIsReading] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [activeTab, setActiveTab] = useState("reading")
 
-  // Set initial passage when component mounts
-  useEffect(() => {
-    if (!selectedPassage && readingPassages.length > 0) {
-      setSelectedPassage(readingPassages[0])
-    }
-  }, [])
-
-  const handleWordClick = (word: string) => {
-    if (!selectedPassage) return
-    const definition = selectedPassage.vocabulary.find(v => v.word.toLowerCase() === word.toLowerCase())
-    if (definition) {
-      setSelectedWord(definition)
-    }
-  }
-
-  const highlightVocabulary = (text: string) => {
-    if (!selectedPassage) return text
-    const words = text.split(' ')
-    return words.map((word, index) => {
-      const cleanWord = word.replace(/[.,!?;:]/g, '')
-      const isVocabulary = selectedPassage.vocabulary.some(v => 
-        v.word.toLowerCase() === cleanWord.toLowerCase()
-      )
-      
-      if (isVocabulary) {
-        return (
-          <span
-            key={index}
-            className="cursor-pointer text-blue-600 hover:text-blue-800 underline decoration-dotted"
-            onClick={() => handleWordClick(cleanWord)}
-          >
-            {word}
-          </span>
-        )
-      }
-      return <span key={index}>{word}</span>
-    }).reduce((prev, curr, index) => {
-      return index < words.length - 1 ? [prev, curr, ' '] : [prev, curr]
-    }, [] as React.ReactNode[])
-  }
-
-  const handleAnswerSelect = (answerIndex: number) => {
-    const newAnswers = [...userAnswers]
-    newAnswers[currentQuestion] = answerIndex
-    setUserAnswers(newAnswers)
-  }
-
-  const calculateScore = () => {
-    if (!selectedPassage) return 0
-    const correct = userAnswers.filter((answer, index) => 
-      answer === selectedPassage.comprehensionQuestions[index].correct
-    ).length
-    return Math.round((correct / selectedPassage.comprehensionQuestions.length) * 100)
-  }
-
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case "beginner":
-        return "bg-green-100 text-green-800 border-green-200"
-      case "intermediate":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200"
-      case "advanced":
-        return "bg-red-100 text-red-800 border-red-200"
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200"
-    }
+  if (!passage) {
+    notFound()
   }
 
   const speakText = (text: string) => {
-    if ('speechSynthesis' in window) {
+    if (typeof window !== "undefined" && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel()
-      
-      const utterance = new SpeechSynthesisUtterance(text)
+      const utterance = new window.SpeechSynthesisUtterance(text)
       utterance.lang = 'en-US'
       utterance.rate = 0.9
       utterance.pitch = 1
       utterance.volume = isMuted ? 0 : 1
-      
       utterance.onstart = () => setIsReading(true)
       utterance.onend = () => setIsReading(false)
       utterance.onpause = () => setIsReading(false)
       utterance.onresume = () => setIsReading(true)
-      
       window.speechSynthesis.speak(utterance)
     }
   }
 
   const stopReading = () => {
-    if ('speechSynthesis' in window) {
+    if (typeof window !== "undefined" && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel()
       setIsReading(false)
     }
@@ -119,22 +82,8 @@ export function InteractiveReading() {
     setIsMuted(!isMuted)
   }
 
-  if (!selectedPassage) {
-    return (
-      <div className="space-y-6">
-        <Card>
-          <CardContent className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-slate-600">Loading reading materials...</p>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
   return (
     <div className="space-y-6">
-      {/* Header Card */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -142,115 +91,23 @@ export function InteractiveReading() {
             <span>Interactive Reading</span>
           </CardTitle>
           <CardDescription>
-            Click on highlighted words to see definitions and test your comprehension
+            記事の詳細ページ（URL: /interactive-reading/{params.id}）
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* Article Selection */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-900">Choose an Article</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {readingPassages.map((passage) => (
-                <div
-                  key={passage.id}
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${
-                    selectedPassage.id === passage.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-slate-200 hover:border-slate-300'
-                  }`}
-                  onClick={() => {
-                    setSelectedPassage(passage)
-                    setCurrentQuestion(0)
-                    setUserAnswers([])
-                    setShowResults(false)
-                    setActiveTab("reading")
-                  }}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <h4 className="font-semibold text-slate-900 line-clamp-2">{passage.title}</h4>
-                    <Badge className={getDifficultyColor(passage.difficulty)}>
-                      {passage.difficulty}
-                    </Badge>
-                  </div>
-                  <div className="space-y-2 text-sm text-slate-600">
-                    <div className="flex items-center space-x-4">
-                      <span>{passage.wordCount} words</span>
-                      <span>•</span>
-                      <span>{passage.estimatedTime} min read</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <BookOpen className="w-4 h-4" />
-                      <span>{passage.vocabulary.length} vocabulary words</span>
-                    </div>
-                  </div>
-                  <div className="mt-3 text-xs text-slate-500 line-clamp-2">
-                    {passage.content.substring(0, 120)}...
-                  </div>
-                </div>
-              ))}
+          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg mt-4">
+            <div className="flex items-center space-x-4">
+              <Badge className={getDifficultyColor(passage.difficulty)}>
+                {passage.difficulty}
+              </Badge>
+              <span className="text-sm text-slate-600">
+                {passage.wordCount} words • {passage.estimatedTime} min read
+              </span>
             </div>
           </div>
-
-          {/* Current Article Info */}
-          {selectedPassage && (
-            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg mt-4">
-              <div className="flex items-center space-x-4">
-                <Badge className={getDifficultyColor(selectedPassage.difficulty)}>
-                  {selectedPassage.difficulty}
-                </Badge>
-                <span className="text-sm text-slate-600">
-                  {selectedPassage.wordCount} words • {selectedPassage.estimatedTime} min read
-                </span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="text-sm text-slate-500">
-                  Article {readingPassages.findIndex(p => p.id === selectedPassage.id) + 1} of {readingPassages.length}
-                </div>
-                <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const currentIndex = readingPassages.findIndex(p => p.id === selectedPassage.id)
-                      const prevIndex = currentIndex > 0 ? currentIndex - 1 : readingPassages.length - 1
-                      const prevPassage = readingPassages[prevIndex]
-                      setSelectedPassage(prevPassage)
-                      setCurrentQuestion(0)
-                      setUserAnswers([])
-                      setShowResults(false)
-                      setActiveTab("reading")
-                    }}
-                    disabled={readingPassages.length <= 1}
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-1" />
-                    Previous
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const currentIndex = readingPassages.findIndex(p => p.id === selectedPassage.id)
-                      const nextIndex = currentIndex < readingPassages.length - 1 ? currentIndex + 1 : 0
-                      const nextPassage = readingPassages[nextIndex]
-                      setSelectedPassage(nextPassage)
-                      setCurrentQuestion(0)
-                      setUserAnswers([])
-                      setShowResults(false)
-                      setActiveTab("reading")
-                    }}
-                    disabled={readingPassages.length <= 1}
-                  >
-                    Next
-                    <ArrowRight className="w-4 h-4 ml-1" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
 
-      {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -258,11 +115,10 @@ export function InteractiveReading() {
               <TabsTrigger value="reading">Reading</TabsTrigger>
               <TabsTrigger value="quiz">Vocabulary Review</TabsTrigger>
             </TabsList>
-
             <TabsContent value="reading" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>{selectedPassage.title}</CardTitle>
+                  <CardTitle>{passage.title}</CardTitle>
                   <div className="flex items-center space-x-2">
                     <Button
                       variant="outline"
@@ -272,10 +128,10 @@ export function InteractiveReading() {
                       <Eye className="w-4 h-4 mr-2" />
                       {showDefinitions ? "Hide" : "Show"} Definitions
                     </Button>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
-                      onClick={isReading ? stopReading : () => speakText(selectedPassage.content)}
+                      onClick={isReading ? stopReading : () => speakText(passage.content)}
                       className={isReading ? "bg-red-50 text-red-700 border-red-200" : ""}
                     >
                       {isReading ? (
@@ -303,15 +159,14 @@ export function InteractiveReading() {
                 <CardContent>
                   <div className="prose max-w-none">
                     <div className="text-lg leading-relaxed space-y-4">
-                      {highlightVocabulary(selectedPassage.content)}
+                      {highlightVocabulary(passage.content, passage, setSelectedWord)}
                     </div>
                   </div>
-
                   {showDefinitions && (
                     <div className="mt-6 p-4 bg-slate-50 rounded-lg">
                       <h4 className="font-medium mb-3">Vocabulary</h4>
                       <div className="space-y-2">
-                        {selectedPassage.vocabulary.map((vocab, index) => (
+                        {passage.vocabulary.map((vocab, index) => (
                           <div key={index} className="flex items-start space-x-2">
                             <Badge variant="outline" className="text-xs">
                               {vocab.difficulty}
@@ -330,7 +185,6 @@ export function InteractiveReading() {
                 </CardContent>
               </Card>
             </TabsContent>
-
             <TabsContent value="quiz" className="space-y-4">
               <Card>
                 <CardHeader>
@@ -344,9 +198,9 @@ export function InteractiveReading() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {selectedPassage.vocabulary.map((vocab, index) => (
-                      <div 
-                        key={index} 
+                    {passage.vocabulary.map((vocab, index) => (
+                      <div
+                        key={index}
                         className="p-4 bg-white rounded-lg border hover:shadow-md transition-shadow cursor-pointer"
                         onClick={() => {
                           setSelectedWord(vocab)
@@ -367,7 +221,6 @@ export function InteractiveReading() {
                       </div>
                     ))}
                   </div>
-                  
                   <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                     <h4 className="font-medium text-blue-900 mb-2">Study Tips</h4>
                     <ul className="text-sm text-blue-800 space-y-1">
@@ -382,8 +235,6 @@ export function InteractiveReading() {
             </TabsContent>
           </Tabs>
         </div>
-
-        {/* Sidebar */}
         <div className="space-y-4">
           {selectedWord && (
             <Card>
@@ -402,7 +253,6 @@ export function InteractiveReading() {
               </CardContent>
             </Card>
           )}
-
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -418,7 +268,6 @@ export function InteractiveReading() {
                 </div>
                 <Progress value={75} className="h-2" />
               </div>
-              
               <div>
                 <div className="flex justify-between text-sm mb-1">
                   <span>Weekly Articles</span>
@@ -426,7 +275,6 @@ export function InteractiveReading() {
                 </div>
                 <Progress value={60} className="h-2" />
               </div>
-
               <div>
                 <div className="flex justify-between text-sm mb-1">
                   <span>Comprehension</span>
@@ -440,4 +288,4 @@ export function InteractiveReading() {
       </div>
     </div>
   )
-}
+} 

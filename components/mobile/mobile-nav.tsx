@@ -14,6 +14,7 @@ import {
   GitBranch,
   Settings,
   Calendar,
+  Camera,
 } from "lucide-react"
 
 interface MobileNavProps {
@@ -29,6 +30,7 @@ const navItems = [
   { id: "vocab", label: "Vocabulary", icon: BookOpen },
   { id: "grammar", label: "Grammar", icon: BookOpen },
   { id: "lint", label: "Grammar Lint", icon: MessageSquare },
+  { id: "ocr", label: "OCR Input", icon: Camera },
   { id: "review", label: "Review", icon: Clock },
   { id: "logs", label: "Build Logs", icon: GitBranch },
   { id: "progress", label: "Progress", icon: TrendingUp },

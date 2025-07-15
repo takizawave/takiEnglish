@@ -29,6 +29,7 @@ import {
   PenTool,
   Volume2,
   Calendar,
+  Camera,
 } from "lucide-react"
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
@@ -48,17 +49,14 @@ const mainNavItems = [
 const learningNavItems = [
   { id: "reading", label: "Interactive Reading", icon: ReadingIcon },
   { id: "pronunciation", label: "Pronunciation", icon: Mic },
-  { id: "writing", label: "Writing Assistant", icon: PenTool },
   { id: "tts", label: "Text-to-Speech", icon: Volume2 },
 ]
 
 const toolsNavItems = [
-  { id: "lint", label: "Grammar Lint", icon: MessageSquare },
   { id: "review", label: "Review System", icon: Clock },
 ]
 
 const analyticsNavItems = [
-  { id: "progress", label: "Progress", icon: TrendingUp },
   { id: "logs", label: "Build Logs", icon: GitBranch },
 ]
 

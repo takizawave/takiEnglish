@@ -12,7 +12,6 @@ import { MobileArticleProcessor } from "@/components/mobile/mobile-article-proce
 import { MobileVocabularyManager } from "@/components/mobile/mobile-vocabulary-manager"
 import { MobileProgressDashboard } from "@/components/mobile/mobile-progress-dashboard"
 
-import { GrammarLint } from "@/components/grammar-lint"
 import { ReviewSystem } from "@/components/review-system"
 import { BuildLog } from "@/components/build-log"
 import { ProgressDashboard } from "@/components/progress-dashboard"
@@ -20,10 +19,9 @@ import { VocabularyManager } from "@/components/vocabulary-manager"
 import { ArticleProcessor } from "@/components/article-processor"
 import { InteractiveReading } from "@/components/learning-materials/interactive-reading"
 import { PronunciationTrainer } from "@/components/learning-materials/pronunciation-trainer"
-import { WritingAssistant } from "@/components/learning-materials/writing-assistant"
-import { TextToSpeech } from "@/components/ui/text-to-speech"
 import { ComprehensiveGrammar } from "@/components/learning-materials/comprehensive-grammar"
-import { TodaysStudy } from "@/components/learning-materials/todays-study"
+import { TodaysFocusFullPage } from "@/components/learning-materials/todays-study"
+import { TextToSpeech } from "@/components/ui/text-to-speech"
 
 export default function LearningPlatformMobile() {
   const [activeTab, setActiveTab] = useState("dashboard")
@@ -53,7 +51,7 @@ export default function LearningPlatformMobile() {
                 </TabsContent>
 
                 <TabsContent value="today" className="mt-0">
-                  <TodaysStudy />
+                  <TodaysFocusFullPage />
                 </TabsContent>
 
                 <TabsContent value="article" className="mt-0">
@@ -63,7 +61,7 @@ export default function LearningPlatformMobile() {
 
 
                 <TabsContent value="lint" className="mt-0">
-                  <GrammarLint />
+                  <ComprehensiveGrammar />
                 </TabsContent>
 
                 <TabsContent value="vocab" className="mt-0">
@@ -82,10 +80,6 @@ export default function LearningPlatformMobile() {
                   <PronunciationTrainer />
                 </TabsContent>
 
-                <TabsContent value="writing" className="mt-0">
-                  <WritingAssistant />
-                </TabsContent>
-
                 <TabsContent value="tts" className="mt-0">
                   <TextToSpeech />
                 </TabsContent>
@@ -96,10 +90,6 @@ export default function LearningPlatformMobile() {
 
                 <TabsContent value="logs" className="mt-0">
                   <BuildLog />
-                </TabsContent>
-
-                <TabsContent value="progress" className="mt-0">
-                  <ProgressDashboard />
                 </TabsContent>
               </Tabs>
             </div>
@@ -123,7 +113,7 @@ export default function LearningPlatformMobile() {
             </TabsContent>
 
             <TabsContent value="today">
-              <TodaysStudy />
+              <TodaysFocusFullPage />
             </TabsContent>
 
             <TabsContent value="article">
@@ -133,7 +123,7 @@ export default function LearningPlatformMobile() {
 
 
             <TabsContent value="lint">
-              <GrammarLint />
+              <ComprehensiveGrammar />
             </TabsContent>
 
             <TabsContent value="vocab">
@@ -152,10 +142,6 @@ export default function LearningPlatformMobile() {
               <PronunciationTrainer />
             </TabsContent>
 
-            <TabsContent value="writing">
-              <WritingAssistant />
-            </TabsContent>
-
             <TabsContent value="tts">
               <TextToSpeech />
             </TabsContent>
@@ -166,10 +152,6 @@ export default function LearningPlatformMobile() {
 
             <TabsContent value="logs">
               <BuildLog />
-            </TabsContent>
-
-            <TabsContent value="progress">
-              <MobileProgressDashboard />
             </TabsContent>
           </Tabs>
         </main>
