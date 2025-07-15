@@ -142,6 +142,48 @@ const grammarModules: GrammarModule[] = [
             correctAnswer: "For previously mentioned or unique items",
             explanation: "The definite article 'the' is used for specific, known items",
             completed: false
+          },
+          {
+            id: "lecture-1-2",
+            type: "multiple-choice",
+            question: "When do we use 'a' vs 'an'?",
+            options: [
+              "Use 'a' before consonants, 'an' before vowels",
+              "Use 'a' before consonant sounds, 'an' before vowel sounds",
+              "Use 'a' for singular, 'an' for plural",
+              "Use 'a' for countable, 'an' for uncountable"
+            ],
+            correctAnswer: "Use 'a' before consonant sounds, 'an' before vowel sounds",
+            explanation: "It's about sound, not spelling. 'An hour' (silent h), 'a university' (y sound)",
+            completed: false
+          },
+          {
+            id: "lecture-1-3",
+            type: "multiple-choice",
+            question: "Which nouns are typically uncountable?",
+            options: [
+              "Information, advice, furniture",
+              "Book, car, house",
+              "Person, animal, plant",
+              "All of the above"
+            ],
+            correctAnswer: "Information, advice, furniture",
+            explanation: "Abstract concepts and mass nouns are usually uncountable",
+            completed: false
+          },
+          {
+            id: "lecture-1-4",
+            type: "multiple-choice",
+            question: "When do we use zero article?",
+            options: [
+              "With all plural nouns",
+              "With uncountable nouns in general statements",
+              "With proper nouns",
+              "All of the above"
+            ],
+            correctAnswer: "All of the above",
+            explanation: "Zero article is used in many contexts where no article is needed",
+            completed: false
           }
         ],
         completed: false
@@ -175,6 +217,52 @@ const grammarModules: GrammarModule[] = [
             correctAnswer: "I study economics at university",
             explanation: "No article needed for general institutions",
             completed: false
+          },
+          {
+            id: "practice-1-4",
+            type: "cloze",
+            question: "I bought ___ umbrella because ___ weather was bad. ___ umbrella was expensive.",
+            correctAnswer: "an, the, The",
+            explanation: "Use 'an' before vowel sound, 'the' for specific weather and previously mentioned item",
+            completed: false
+          },
+          {
+            id: "practice-1-5",
+            type: "error-correction",
+            question: "Correct: 'I need an advice about the job. Can you give me the information?'",
+            correctAnswer: "I need advice about the job. Can you give me the information?",
+            explanation: "Advice is uncountable, so no article. Information can be used with 'the' when specific",
+            completed: false
+          },
+          {
+            id: "practice-1-6",
+            type: "multiple-choice",
+            question: "Which sentence is correct?",
+            options: [
+              "I went to the school to pick up my child",
+              "I went to school to pick up my child",
+              "I went to a school to pick up my child",
+              "All are correct"
+            ],
+            correctAnswer: "I went to school to pick up my child",
+            explanation: "Use zero article for general institutions when referring to the activity",
+            completed: false
+          },
+          {
+            id: "practice-1-7",
+            type: "cloze",
+            question: "___ United States is ___ country in ___ North America. ___ country has ___ population of over 300 million.",
+            correctAnswer: "The, a, -, The, a",
+            explanation: "Use 'the' for country names with 'United', 'a' for general reference, zero article for continents",
+            completed: false
+          },
+          {
+            id: "practice-1-8",
+            type: "transformation",
+            question: "Add appropriate articles: 'I have meeting at office tomorrow'",
+            correctAnswer: "I have a meeting at the office tomorrow",
+            explanation: "Use 'a' for first mention of countable noun, 'the' for specific office",
+            completed: false
           }
         ],
         completed: false
@@ -191,6 +279,30 @@ const grammarModules: GrammarModule[] = [
             question: "Write 3 sentences about your ideal apartment using correct articles",
             correctAnswer: "Sample: I want an apartment near the station. The apartment should have a balcony. There should be a supermarket within walking distance.",
             explanation: "Practice using articles in real-world context",
+            completed: false
+          },
+          {
+            id: "task-1-2",
+            type: "transformation",
+            question: "Write a description of a restaurant using articles correctly",
+            correctAnswer: "Sample: The restaurant is located in the heart of the city. It serves an excellent variety of dishes. The chef is famous for the pasta dishes.",
+            explanation: "Practice using definite and indefinite articles in descriptions",
+            completed: false
+          },
+          {
+            id: "task-1-3",
+            type: "transformation",
+            question: "Write 2 sentences about transportation using articles",
+            correctAnswer: "Sample: I take the train to work every day. The train is usually crowded during rush hour.",
+            explanation: "Practice using articles with transportation",
+            completed: false
+          },
+          {
+            id: "task-1-4",
+            type: "transformation",
+            question: "Write a sentence about education using zero article",
+            correctAnswer: "Sample: I went to university to study engineering. Education is important for career success.",
+            explanation: "Practice using zero article with institutions and abstract concepts",
             completed: false
           }
         ],
@@ -261,7 +373,64 @@ const grammarModules: GrammarModule[] = [
         title: "Mini-Lecture: Time Expressions",
         type: "lecture",
         content: "Learn how to express different time periods and states in English",
-        exercises: [],
+        exercises: [
+          {
+            id: "lecture-2-1",
+            type: "multiple-choice",
+            question: "Which tense is used for current habits?",
+            options: [
+              "Present simple",
+              "Present continuous",
+              "Present perfect",
+              "Past simple"
+            ],
+            correctAnswer: "Present simple",
+            explanation: "Present simple is used for regular habits and routines",
+            completed: false
+          },
+          {
+            id: "lecture-2-2",
+            type: "multiple-choice",
+            question: "When do we use present continuous?",
+            options: [
+              "For completed actions",
+              "For actions happening now",
+              "For future plans",
+              "Both B and C"
+            ],
+            correctAnswer: "Both B and C",
+            explanation: "Present continuous is used for current actions and arranged future plans",
+            completed: false
+          },
+          {
+            id: "lecture-2-3",
+            type: "multiple-choice",
+            question: "Which tense connects past to present?",
+            options: [
+              "Past simple",
+              "Present perfect",
+              "Present simple",
+              "Past continuous"
+            ],
+            correctAnswer: "Present perfect",
+            explanation: "Present perfect connects past actions to present relevance",
+            completed: false
+          },
+          {
+            id: "lecture-2-4",
+            type: "multiple-choice",
+            question: "When do we use past simple?",
+            options: [
+              "For actions happening now",
+              "For completed actions at specific times",
+              "For future plans",
+              "For ongoing past actions"
+            ],
+            correctAnswer: "For completed actions at specific times",
+            explanation: "Past simple is used for finished actions with specific time references",
+            completed: false
+          }
+        ],
         completed: false
       },
       {
@@ -277,8 +446,111 @@ const grammarModules: GrammarModule[] = [
             correctAnswer: "I worked in Tokyo",
             explanation: "Simple past for completed actions",
             completed: false
+          },
+          {
+            id: "practice-2-2",
+            type: "cloze",
+            question: "I ___ (live) in Tokyo for 5 years. I ___ (move) here in 2019.",
+            correctAnswer: "have lived, moved",
+            explanation: "Present perfect for duration, past simple for specific time",
+            completed: false
+          },
+          {
+            id: "practice-2-3",
+            type: "multiple-choice",
+            question: "Which sentence is correct for a current action?",
+            options: [
+              "I am studying English now",
+              "I study English now",
+              "I studied English now",
+              "I have studied English now"
+            ],
+            correctAnswer: "I am studying English now",
+            explanation: "Present continuous for actions happening now",
+            completed: false
+          },
+          {
+            id: "practice-2-4",
+            type: "transformation",
+            question: "Express as a habit: 'I am reading a book'",
+            correctAnswer: "I read books",
+            explanation: "Present simple for regular habits",
+            completed: false
+          },
+          {
+            id: "practice-2-5",
+            type: "cloze",
+            question: "She ___ (work) as a teacher. She ___ (start) this job last year.",
+            correctAnswer: "works, started",
+            explanation: "Present simple for current job, past simple for when it began",
+            completed: false
+          },
+          {
+            id: "practice-2-6",
+            type: "error-correction",
+            question: "Correct: 'I am working here since 2020'",
+            correctAnswer: "I have been working here since 2020",
+            explanation: "Use present perfect continuous for actions that started in the past and continue now",
+            completed: false
+          },
+          {
+            id: "practice-2-7",
+            type: "translation",
+            question: "Translate: '私は昨日映画を見ました' (I watched a movie yesterday)",
+            correctAnswer: "I watched a movie yesterday",
+            explanation: "Past simple for completed action with specific time",
+            completed: false
+          },
+          {
+            id: "practice-2-8",
+            type: "cloze",
+            question: "Look! It ___ (rain). It ___ (rain) since morning.",
+            correctAnswer: "is raining, has been raining",
+            explanation: "Present continuous for current action, present perfect continuous for duration",
+            completed: false
           }
         ],
+        completed: false
+      },
+      {
+        id: "task-2",
+        title: "Real-life Task: Two-timeline Diary",
+        type: "task",
+        content: "Create a diary entry with two timelines: what you did yesterday and what you're doing today. Use appropriate tenses for each timeline.",
+        exercises: [
+          {
+            id: "task-2-1",
+            type: "transformation",
+            question: "Write 3 sentences about yesterday using past tense",
+            correctAnswer: "Sample: I went to the gym yesterday. I had dinner with friends. I watched a movie before bed.",
+            explanation: "Use past simple for completed actions in the past",
+            completed: false
+          },
+          {
+            id: "task-2-2",
+            type: "transformation",
+            question: "Write 3 sentences about today using present tense",
+            correctAnswer: "Sample: I am working from home today. I have a meeting at 3 PM. I usually take a break at noon.",
+            explanation: "Use present continuous for current actions, present simple for schedules",
+            completed: false
+          },
+          {
+            id: "task-2-3",
+            type: "transformation",
+            question: "Write a sentence connecting past to present",
+            correctAnswer: "Sample: I have lived in this city for 10 years. I have been working at this company since 2018.",
+            explanation: "Use present perfect to connect past actions to present",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "reflection-2",
+        title: "Reflection Journal: Present vs Past",
+        type: "reflection",
+        content: "Reflect on your learning and identify areas for improvement. What was most challenging about distinguishing between present and past forms?",
+        exercises: [],
         completed: false
       }
     ]
@@ -770,6 +1042,654 @@ const grammarModules: GrammarModule[] = [
     progress: 0,
     completed: false,
     lessons: []
+  },
+  {
+    id: "passive-voice",
+    title: "Passive Voice",
+    subtitle: "Master active vs passive constructions",
+    description: "Learn when and how to use passive voice effectively. Understand the difference between active and passive voice and when each is appropriate.",
+    difficulty: "intermediate",
+    egInUseUnits: "42-46",
+    keyActivity: "News article analysis and rewriting",
+    japanesePainPoint: "Japanese passive construction differs from English",
+    estimatedTime: 120,
+    progress: 0,
+    completed: false,
+    lessons: [
+      {
+        id: "preview-9",
+        title: "Preview Quiz: Passive Voice",
+        type: "preview",
+        content: "Test your understanding of active vs passive voice",
+        exercises: [
+          {
+            id: "preview-9-1",
+            type: "multiple-choice",
+            question: "Which sentence is in passive voice?",
+            options: [
+              "The cat chased the mouse",
+              "The mouse was chased by the cat",
+              "The cat is chasing the mouse",
+              "The mouse chases the cat"
+            ],
+            correctAnswer: "The mouse was chased by the cat",
+            explanation: "Passive voice focuses on the receiver of the action",
+            completed: false
+          },
+          {
+            id: "preview-9-2",
+            type: "multiple-choice",
+            question: "When is passive voice most appropriate?",
+            options: [
+              "When the doer is important",
+              "When the action is more important than the doer",
+              "When you want to emphasize who did something",
+              "When the subject is active"
+            ],
+            correctAnswer: "When the action is more important than the doer",
+            explanation: "Passive voice emphasizes the action or result",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "lecture-9",
+        title: "Mini-Lecture: Passive Voice Usage",
+        type: "lecture",
+        content: "Learn when to use passive voice and how to form it correctly",
+        exercises: [
+          {
+            id: "lecture-9-1",
+            type: "multiple-choice",
+            question: "What is the passive form of 'They built this house'?",
+            options: [
+              "This house was built by them",
+              "This house is built by them",
+              "This house builds by them",
+              "This house built by them"
+            ],
+            correctAnswer: "This house was built by them",
+            explanation: "Use past simple passive for completed actions",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "practice-9",
+        title: "Guided Practice: Active to Passive",
+        type: "practice",
+        content: "Practice converting active voice to passive voice",
+        exercises: [
+          {
+            id: "practice-9-1",
+            type: "transformation",
+            question: "Convert to passive: 'The company will launch the product next month'",
+            correctAnswer: "The product will be launched by the company next month",
+            explanation: "Future passive uses 'will be + past participle'",
+            completed: false
+          },
+          {
+            id: "practice-9-2",
+            type: "cloze",
+            question: "The book ___ (write) by a famous author. It ___ (publish) last year.",
+            correctAnswer: "was written, was published",
+            explanation: "Past simple passive for completed actions",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "task-9",
+        title: "Real-life Task: News Analysis",
+        type: "task",
+        content: "Analyze news articles and identify active vs passive voice usage",
+        exercises: [],
+        completed: false
+      }
+    ]
+  },
+  {
+    id: "reported-speech",
+    title: "Reported Speech",
+    subtitle: "Master indirect speech and tense changes",
+    description: "Learn to report what others have said accurately. Master the tense changes and time expressions used in reported speech.",
+    difficulty: "intermediate",
+    egInUseUnits: "47-52",
+    keyActivity: "Interview transcription and reporting",
+    japanesePainPoint: "Japanese reported speech structure differs significantly",
+    estimatedTime: 130,
+    progress: 0,
+    completed: false,
+    lessons: [
+      {
+        id: "preview-10",
+        title: "Preview Quiz: Reported Speech",
+        type: "preview",
+        content: "Test your understanding of direct vs reported speech",
+        exercises: [
+          {
+            id: "preview-10-1",
+            type: "multiple-choice",
+            question: "What is the reported form of 'I am happy'?",
+            options: [
+              "He said I am happy",
+              "He said he is happy",
+              "He said he was happy",
+              "He said he will be happy"
+            ],
+            correctAnswer: "He said he was happy",
+            explanation: "Present simple becomes past simple in reported speech",
+            completed: false
+          },
+          {
+            id: "preview-10-2",
+            type: "multiple-choice",
+            question: "Which time expression changes in reported speech?",
+            options: [
+              "today",
+              "yesterday",
+              "tomorrow",
+              "All of the above"
+            ],
+            correctAnswer: "All of the above",
+            explanation: "Time expressions shift back in reported speech",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "lecture-10",
+        title: "Mini-Lecture: Tense Changes",
+        type: "lecture",
+        content: "Learn the systematic tense changes in reported speech",
+        exercises: [
+          {
+            id: "lecture-10-1",
+            type: "multiple-choice",
+            question: "What does 'will' become in reported speech?",
+            options: [
+              "will",
+              "would",
+              "would have",
+              "had"
+            ],
+            correctAnswer: "would",
+            explanation: "Will becomes would in reported speech",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "practice-10",
+        title: "Guided Practice: Speech Reporting",
+        type: "practice",
+        content: "Practice converting direct speech to reported speech",
+        exercises: [
+          {
+            id: "practice-10-1",
+            type: "transformation",
+            question: "Report: 'I will help you tomorrow'",
+            correctAnswer: "He said he would help me the next day",
+            explanation: "Will becomes would, tomorrow becomes the next day",
+            completed: false
+          },
+          {
+            id: "practice-10-2",
+            type: "cloze",
+            question: "She said, 'I ___ (work) here for 5 years.' → She said she ___ (work) there for 5 years.",
+            correctAnswer: "have worked, had worked",
+            explanation: "Present perfect becomes past perfect in reported speech",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "task-10",
+        title: "Real-life Task: Interview Reporting",
+        type: "task",
+        content: "Conduct and report on interviews using reported speech",
+        exercises: [],
+        completed: false
+      }
+    ]
+  },
+  {
+    id: "subjunctive-mood",
+    title: "Subjunctive Mood",
+    subtitle: "Master hypothetical and formal expressions",
+    description: "Learn to use subjunctive mood for hypothetical situations, wishes, and formal expressions. Understand when and how to use 'were', 'be', and other subjunctive forms.",
+    difficulty: "advanced",
+    egInUseUnits: "38-40",
+    keyActivity: "Formal proposal writing with subjunctive expressions",
+    japanesePainPoint: "Japanese doesn't have equivalent subjunctive system",
+    estimatedTime: 140,
+    progress: 0,
+    completed: false,
+    lessons: [
+      {
+        id: "preview-11",
+        title: "Preview Quiz: Subjunctive Mood",
+        type: "preview",
+        content: "Test your understanding of subjunctive mood usage",
+        exercises: [
+          {
+            id: "preview-11-1",
+            type: "multiple-choice",
+            question: "Which sentence uses subjunctive mood?",
+            options: [
+              "If I am rich, I will buy a house",
+              "If I were rich, I would buy a house",
+              "If I was rich, I would buy a house",
+              "If I will be rich, I will buy a house"
+            ],
+            correctAnswer: "If I were rich, I would buy a house",
+            explanation: "Subjunctive uses 'were' for all persons in hypothetical situations",
+            completed: false
+          },
+          {
+            id: "preview-11-2",
+            type: "multiple-choice",
+            question: "Which expression requires subjunctive?",
+            options: [
+              "I suggest that you go",
+              "I suggest that you goes",
+              "I suggest that you went",
+              "I suggest that you will go"
+            ],
+            correctAnswer: "I suggest that you go",
+            explanation: "Subjunctive uses base form after certain expressions",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "lecture-11",
+        title: "Mini-Lecture: Subjunctive Forms",
+        type: "lecture",
+        content: "Learn the different forms and uses of subjunctive mood",
+        exercises: [
+          {
+            id: "lecture-11-1",
+            type: "multiple-choice",
+            question: "What form is used in 'It's important that he be on time'?",
+            options: [
+              "Present simple",
+              "Base form",
+              "Past simple",
+              "Infinitive"
+            ],
+            correctAnswer: "Base form",
+            explanation: "Subjunctive uses base form after expressions of importance",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "practice-11",
+        title: "Guided Practice: Subjunctive Usage",
+        type: "practice",
+        content: "Practice using subjunctive mood in various contexts",
+        exercises: [
+          {
+            id: "practice-11-1",
+            type: "transformation",
+            question: "Use subjunctive: 'I wish I (have) more time'",
+            correctAnswer: "I wish I had more time",
+            explanation: "Wish + past simple for present wishes",
+            completed: false
+          },
+          {
+            id: "practice-11-2",
+            type: "cloze",
+            question: "It's essential that she ___ (attend) the meeting. I suggest that he ___ (be) more careful.",
+            correctAnswer: "attend, be",
+            explanation: "Subjunctive uses base form after essential/suggest",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "task-11",
+        title: "Real-life Task: Formal Proposal",
+        type: "task",
+        content: "Write a formal proposal using subjunctive expressions",
+        exercises: [],
+        completed: false
+      }
+    ]
+  },
+  {
+    id: "inversion",
+    title: "Inversion",
+    subtitle: "Master formal and emphatic sentence structures",
+    description: "Learn to use inversion for emphasis and formal writing. Master negative inversion, conditional inversion, and other advanced sentence structures.",
+    difficulty: "advanced",
+    egInUseUnits: "118-120",
+    keyActivity: "Academic writing with inversion patterns",
+    japanesePainPoint: "Japanese word order differs significantly from English inversion",
+    estimatedTime: 150,
+    progress: 0,
+    completed: false,
+    lessons: [
+      {
+        id: "preview-12",
+        title: "Preview Quiz: Inversion",
+        type: "preview",
+        content: "Test your understanding of inversion patterns",
+        exercises: [
+          {
+            id: "preview-12-1",
+            type: "multiple-choice",
+            question: "Which sentence uses inversion?",
+            options: [
+              "I have never seen such beauty",
+              "Never have I seen such beauty",
+              "I never have seen such beauty",
+              "Never I have seen such beauty"
+            ],
+            correctAnswer: "Never have I seen such beauty",
+            explanation: "Negative inversion for emphasis",
+            completed: false
+          },
+          {
+            id: "preview-12-2",
+            type: "multiple-choice",
+            question: "What type of inversion is 'Had I known, I would have helped'?",
+            options: [
+              "Negative inversion",
+              "Conditional inversion",
+              "Question inversion",
+              "Emphatic inversion"
+            ],
+            correctAnswer: "Conditional inversion",
+            explanation: "Inverted conditional without 'if'",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "lecture-12",
+        title: "Mini-Lecture: Inversion Types",
+        type: "lecture",
+        content: "Learn the different types of inversion and when to use them",
+        exercises: [
+          {
+            id: "lecture-12-1",
+            type: "multiple-choice",
+            question: "When do we use negative inversion?",
+            options: [
+              "For questions only",
+              "For emphasis with negative expressions",
+              "For formal writing only",
+              "For conditional sentences only"
+            ],
+            correctAnswer: "For emphasis with negative expressions",
+            explanation: "Negative inversion emphasizes negative expressions",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "practice-12",
+        title: "Guided Practice: Inversion Construction",
+        type: "practice",
+        content: "Practice constructing sentences with inversion",
+        exercises: [
+          {
+            id: "practice-12-1",
+            type: "transformation",
+            question: "Use inversion: 'I rarely go to the cinema'",
+            correctAnswer: "Rarely do I go to the cinema",
+            explanation: "Negative inversion with 'rarely'",
+            completed: false
+          },
+          {
+            id: "practice-12-2",
+            type: "cloze",
+            question: "___ (be) it not for your help, I ___ (fail) the exam.",
+            correctAnswer: "Were, would have failed",
+            explanation: "Inverted conditional with 'were it not for'",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "task-12",
+        title: "Real-life Task: Academic Writing",
+        type: "task",
+        content: "Write academic paragraphs using various inversion patterns",
+        exercises: [],
+        completed: false
+      }
+    ]
+  },
+  {
+    id: "ellipsis-substitution",
+    title: "Ellipsis & Substitution",
+    subtitle: "Master natural spoken English patterns",
+    description: "Learn to use ellipsis and substitution to make your English sound more natural. Understand when to omit words and how to substitute for previously mentioned items.",
+    difficulty: "advanced",
+    egInUseUnits: "145-150",
+    keyActivity: "Natural conversation recording and analysis",
+    japanesePainPoint: "Japanese ellipsis patterns differ from English",
+    estimatedTime: 120,
+    progress: 0,
+    completed: false,
+    lessons: [
+      {
+        id: "preview-13",
+        title: "Preview Quiz: Ellipsis & Substitution",
+        type: "preview",
+        content: "Test your understanding of ellipsis and substitution",
+        exercises: [
+          {
+            id: "preview-13-1",
+            type: "multiple-choice",
+            question: "What is omitted in 'I can speak French, but she can't'?",
+            options: [
+              "speak French",
+              "can speak",
+              "speak",
+              "French"
+            ],
+            correctAnswer: "speak French",
+            explanation: "Ellipsis omits repeated information",
+            completed: false
+          },
+          {
+            id: "preview-13-2",
+            type: "multiple-choice",
+            question: "What does 'one' substitute for in 'I like the red car, but she likes the blue one'?",
+            options: [
+              "car",
+              "red car",
+              "blue car",
+              "color"
+            ],
+            correctAnswer: "car",
+            explanation: "One substitutes for countable nouns",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "lecture-13",
+        title: "Mini-Lecture: Natural Speech Patterns",
+        type: "lecture",
+        content: "Learn how ellipsis and substitution make speech more natural",
+        exercises: [
+          {
+            id: "lecture-13-1",
+            type: "multiple-choice",
+            question: "When can we omit the subject and auxiliary verb?",
+            options: [
+              "In formal writing",
+              "In informal speech",
+              "In questions only",
+              "Never"
+            ],
+            correctAnswer: "In informal speech",
+            explanation: "Ellipsis is common in informal spoken English",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "practice-13",
+        title: "Guided Practice: Natural Speech",
+        type: "practice",
+        content: "Practice using ellipsis and substitution in conversation",
+        exercises: [
+          {
+            id: "practice-13-1",
+            type: "transformation",
+            question: "Make more natural: 'I am going to the store, and she is going to the store too'",
+            correctAnswer: "I'm going to the store, and she is too",
+            explanation: "Use ellipsis to avoid repetition",
+            completed: false
+          },
+          {
+            id: "practice-13-2",
+            type: "cloze",
+            question: "I like this book, but I don't like that ___ (one). She can speak French, but I ___ (can't).",
+            correctAnswer: "one, can't",
+            explanation: "Use substitution and ellipsis for natural speech",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "task-13",
+        title: "Real-life Task: Natural Conversation",
+        type: "task",
+        content: "Record and analyze natural conversation using ellipsis and substitution",
+        exercises: [],
+        completed: false
+      }
+    ]
+  },
+  {
+    id: "collocations",
+    title: "Collocations",
+    subtitle: "Master natural word combinations",
+    description: "Learn common word combinations that sound natural to native speakers. Understand which words go together and avoid unnatural combinations.",
+    difficulty: "intermediate",
+    egInUseUnits: "150-160",
+    keyActivity: "Collocation matching game and creative writing",
+    japanesePainPoint: "Direct translation often creates unnatural combinations",
+    estimatedTime: 110,
+    progress: 0,
+    completed: false,
+    lessons: [
+      {
+        id: "preview-14",
+        title: "Preview Quiz: Collocations",
+        type: "preview",
+        content: "Test your knowledge of common collocations",
+        exercises: [
+          {
+            id: "preview-14-1",
+            type: "multiple-choice",
+            question: "Which collocation is correct?",
+            options: [
+              "make a mistake",
+              "do a mistake",
+              "have a mistake",
+              "take a mistake"
+            ],
+            correctAnswer: "make a mistake",
+            explanation: "Make is the correct verb for mistake",
+            completed: false
+          },
+          {
+            id: "preview-14-2",
+            type: "multiple-choice",
+            question: "Which adjective goes with 'opportunity'?",
+            options: [
+              "big opportunity",
+              "large opportunity",
+              "great opportunity",
+              "All of the above"
+            ],
+            correctAnswer: "All of the above",
+            explanation: "All these adjectives can collocate with opportunity",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "lecture-14",
+        title: "Mini-Lecture: Collocation Types",
+        type: "lecture",
+        content: "Learn different types of collocations and how to use them",
+        exercises: [
+          {
+            id: "lecture-14-1",
+            type: "multiple-choice",
+            question: "What type of collocation is 'heavy rain'?",
+            options: [
+              "Verb + noun",
+              "Adjective + noun",
+              "Adverb + adjective",
+              "Noun + noun"
+            ],
+            correctAnswer: "Adjective + noun",
+            explanation: "Heavy rain is an adjective + noun collocation",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "practice-14",
+        title: "Guided Practice: Collocation Usage",
+        type: "practice",
+        content: "Practice using common collocations correctly",
+        exercises: [
+          {
+            id: "practice-14-1",
+            type: "transformation",
+            question: "Correct: 'I did a big mistake'",
+            correctAnswer: "I made a big mistake",
+            explanation: "Use make with mistake, not do",
+            completed: false
+          },
+          {
+            id: "practice-14-2",
+            type: "cloze",
+            question: "I ___ (take) a decision. She ___ (pay) attention to the details.",
+            correctAnswer: "made, paid",
+            explanation: "Make a decision, pay attention are correct collocations",
+            completed: false
+          }
+        ],
+        completed: false
+      },
+      {
+        id: "task-14",
+        title: "Real-life Task: Creative Writing",
+        type: "task",
+        content: "Write creative pieces using rich collocations",
+        exercises: [],
+        completed: false
+      }
+    ]
   }
 ]
 
@@ -778,6 +1698,7 @@ export function ComprehensiveGrammar() {
   const [currentLesson, setCurrentLesson] = useState<GrammarLesson | null>(null)
   const [activeTab, setActiveTab] = useState("overview")
   const [userAnswers, setUserAnswers] = useState<Record<string, string>>({})
+  const [exerciseResults, setExerciseResults] = useState<Record<string, { isCorrect: boolean; showExplanation: boolean }>>({})
   const [showResults, setShowResults] = useState(false)
   const [isReading, setIsReading] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
@@ -814,6 +1735,65 @@ export function ComprehensiveGrammar() {
 
   const handleAnswerSubmit = (exerciseId: string, answer: string) => {
     setUserAnswers(prev => ({ ...prev, [exerciseId]: answer }))
+  }
+
+  const checkAnswer = (exerciseId: string) => {
+    const exercise = currentLesson?.exercises.find(ex => ex.id === exerciseId)
+    const userAnswer = userAnswers[exerciseId]
+    
+    if (!exercise || !userAnswer) return
+    
+    let isCorrect = false
+    
+    // 正解判定ロジック
+    if (exercise.type === 'multiple-choice') {
+      isCorrect = userAnswer.trim().toLowerCase() === exercise.correctAnswer.trim().toLowerCase()
+    } else if (exercise.type === 'cloze') {
+      // 複数の正解がある場合（カンマ区切り）
+      const correctAnswers = exercise.correctAnswer.split(',').map(ans => ans.trim().toLowerCase())
+      isCorrect = correctAnswers.some(correct => 
+        userAnswer.trim().toLowerCase().includes(correct) || 
+        correct.includes(userAnswer.trim().toLowerCase())
+      )
+    } else if (exercise.type === 'transformation' || exercise.type === 'error-correction' || exercise.type === 'translation') {
+      // 部分一致で判定（キーワードベース）
+      const userWords = userAnswer.trim().toLowerCase().split(/\s+/)
+      const correctWords = exercise.correctAnswer.trim().toLowerCase().split(/\s+/)
+      const matchingWords = userWords.filter(word => correctWords.includes(word))
+      isCorrect = matchingWords.length >= Math.min(userWords.length, correctWords.length) * 0.7 // 70%以上一致
+    }
+    
+    setExerciseResults(prev => ({
+      ...prev,
+      [exerciseId]: { isCorrect, showExplanation: true }
+    }))
+
+    // 演習の完了状態を更新
+    if (currentLesson) {
+      const updatedExercises = currentLesson.exercises.map(ex => 
+        ex.id === exerciseId ? { ...ex, completed: true } : ex
+      )
+      
+      // レッスンの完了状態をチェック
+      const allCompleted = updatedExercises.every(ex => ex.completed)
+      if (allCompleted && !currentLesson.completed) {
+        // レッスン完了時の処理
+        console.log(`Lesson ${currentLesson.id} completed!`)
+      }
+    }
+  }
+
+  const resetExercise = (exerciseId: string) => {
+    setUserAnswers(prev => {
+      const newAnswers = { ...prev }
+      delete newAnswers[exerciseId]
+      return newAnswers
+    })
+    setExerciseResults(prev => {
+      const newResults = { ...prev }
+      delete newResults[exerciseId]
+      return newResults
+    })
   }
 
   const speakText = (text: string) => {
@@ -1019,62 +1999,147 @@ export function ComprehensiveGrammar() {
                 {currentLesson.exercises.length > 0 && (
                   <div className="space-y-4">
                     <h4 className="font-semibold">Exercises</h4>
-                    {currentLesson.exercises.map((exercise) => (
-                      <Card key={exercise.id}>
-                        <CardContent className="pt-6">
-                          <div className="space-y-4">
-                            <div>
-                              <Label className="text-sm font-medium">{exercise.question}</Label>
+                    {currentLesson.exercises.map((exercise) => {
+                      const result = exerciseResults[exercise.id]
+                      const userAnswer = userAnswers[exercise.id]
+                      
+                      return (
+                        <Card key={exercise.id}>
+                          <CardContent className="pt-6">
+                            <div className="space-y-4">
+                              <div>
+                                <Label className="text-sm font-medium">{exercise.question}</Label>
+                                
+                                {exercise.type === 'multiple-choice' && exercise.options && (
+                                  <div className="space-y-2 mt-2">
+                                    {exercise.options.map((option, index) => (
+                                      <div key={index} className="flex items-center space-x-2">
+                                        <input
+                                          type="radio"
+                                          name={exercise.id}
+                                          value={option}
+                                          onChange={(e) => handleAnswerSubmit(exercise.id, e.target.value)}
+                                          className="w-4 h-4"
+                                          disabled={result?.showExplanation}
+                                        />
+                                        <Label className={`text-sm ${result?.showExplanation && option === exercise.correctAnswer ? 'font-bold text-green-600' : ''}`}>
+                                          {option}
+                                        </Label>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                                
+                                {exercise.type === 'cloze' && (
+                                  <Input
+                                    placeholder="Enter your answer"
+                                    value={userAnswer || ''}
+                                    onChange={(e) => handleAnswerSubmit(exercise.id, e.target.value)}
+                                    className={`mt-2 ${result?.showExplanation ? (result.isCorrect ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50') : ''}`}
+                                    disabled={result?.showExplanation}
+                                  />
+                                )}
+                                
+                                {exercise.type === 'transformation' && (
+                                  <Textarea
+                                    placeholder="Enter your transformed sentence"
+                                    value={userAnswer || ''}
+                                    onChange={(e) => handleAnswerSubmit(exercise.id, e.target.value)}
+                                    className={`mt-2 ${result?.showExplanation ? (result.isCorrect ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50') : ''}`}
+                                    disabled={result?.showExplanation}
+                                  />
+                                )}
+
+                                {exercise.type === 'error-correction' && (
+                                  <Textarea
+                                    placeholder="Enter your corrected sentence"
+                                    value={userAnswer || ''}
+                                    onChange={(e) => handleAnswerSubmit(exercise.id, e.target.value)}
+                                    className={`mt-2 ${result?.showExplanation ? (result.isCorrect ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50') : ''}`}
+                                    disabled={result?.showExplanation}
+                                  />
+                                )}
+
+                                {exercise.type === 'translation' && (
+                                  <Textarea
+                                    placeholder="Enter your translation"
+                                    value={userAnswer || ''}
+                                    onChange={(e) => handleAnswerSubmit(exercise.id, e.target.value)}
+                                    className={`mt-2 ${result?.showExplanation ? (result.isCorrect ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50') : ''}`}
+                                    disabled={result?.showExplanation}
+                                  />
+                                )}
+                              </div>
+
+                              {/* Action Buttons */}
+                              <div className="flex items-center space-x-2">
+                                {!result?.showExplanation && userAnswer && (
+                                  <Button
+                                    size="sm"
+                                    onClick={() => checkAnswer(exercise.id)}
+                                    className="bg-blue-600 hover:bg-blue-700"
+                                  >
+                                    Check Answer
+                                  </Button>
+                                )}
+                                
+                                {result?.showExplanation && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => resetExercise(exercise.id)}
+                                  >
+                                    Try Again
+                                  </Button>
+                                )}
+                              </div>
                               
-                              {exercise.type === 'multiple-choice' && exercise.options && (
-                                <div className="space-y-2 mt-2">
-                                  {exercise.options.map((option, index) => (
-                                    <div key={index} className="flex items-center space-x-2">
-                                      <input
-                                        type="radio"
-                                        name={exercise.id}
-                                        value={option}
-                                        onChange={(e) => handleAnswerSubmit(exercise.id, e.target.value)}
-                                        className="w-4 h-4"
-                                      />
-                                      <Label className="text-sm">{option}</Label>
+                              {/* Result Display */}
+                              {result?.showExplanation && (
+                                <div className={`p-4 rounded-lg border-2 ${
+                                  result.isCorrect 
+                                    ? 'bg-green-50 border-green-200' 
+                                    : 'bg-red-50 border-red-200'
+                                }`}>
+                                  <div className="flex items-center space-x-2 mb-3">
+                                    {result.isCorrect ? (
+                                      <CheckCircle className="w-5 h-5 text-green-600" />
+                                    ) : (
+                                      <XCircle className="w-5 h-5 text-red-600" />
+                                    )}
+                                    <span className={`font-medium ${
+                                      result.isCorrect ? 'text-green-800' : 'text-red-800'
+                                    }`}>
+                                      {result.isCorrect ? 'Correct!' : 'Incorrect'}
+                                    </span>
+                                  </div>
+                                  
+                                  <div className="space-y-3">
+                                    <div>
+                                      <span className="text-sm font-medium text-slate-700">Your answer:</span>
+                                      <p className="text-sm text-slate-600 mt-1">{userAnswer}</p>
                                     </div>
-                                  ))}
+                                    
+                                    <div>
+                                      <span className="text-sm font-medium text-slate-700">Correct answer:</span>
+                                      <p className="text-sm text-slate-600 mt-1">{exercise.correctAnswer}</p>
+                                    </div>
+                                    
+                                    <div className="bg-blue-50 p-3 rounded-lg">
+                                      <div className="flex items-center space-x-2 mb-2">
+                                        <Lightbulb className="w-4 h-4 text-blue-600" />
+                                        <span className="text-sm font-medium text-blue-900">Explanation</span>
+                                      </div>
+                                      <p className="text-sm text-blue-800">{exercise.explanation}</p>
+                                    </div>
+                                  </div>
                                 </div>
-                              )}
-                              
-                              {exercise.type === 'cloze' && (
-                                <Input
-                                  placeholder="Enter your answer"
-                                  value={userAnswers[exercise.id] || ''}
-                                  onChange={(e) => handleAnswerSubmit(exercise.id, e.target.value)}
-                                  className="mt-2"
-                                />
-                              )}
-                              
-                              {exercise.type === 'transformation' && (
-                                <Textarea
-                                  placeholder="Enter your transformed sentence"
-                                  value={userAnswers[exercise.id] || ''}
-                                  onChange={(e) => handleAnswerSubmit(exercise.id, e.target.value)}
-                                  className="mt-2"
-                                />
                               )}
                             </div>
-                            
-                            {userAnswers[exercise.id] && (
-                              <div className="p-3 rounded-lg bg-blue-50">
-                                <div className="flex items-center space-x-2 mb-2">
-                                  <Lightbulb className="w-4 h-4 text-blue-600" />
-                                  <span className="text-sm font-medium text-blue-900">Explanation</span>
-                                </div>
-                                <p className="text-sm text-blue-800">{exercise.explanation}</p>
-                              </div>
-                            )}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                          </CardContent>
+                        </Card>
+                      )
+                    })}
                   </div>
                 )}
 

@@ -6,7 +6,7 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/desktop/app-sidebar"
 import { DesktopHeader } from "@/components/desktop/desktop-header"
 import { MobileHeader } from "@/components/mobile/mobile-header"
-import { MobileBottomNav } from "@/components/mobile/mobile-bottom-nav"
+
 import { MobileDashboard } from "@/components/mobile/mobile-dashboard"
 import { MobileArticleProcessor } from "@/components/mobile/mobile-article-processor"
 import { MobileVocabularyManager } from "@/components/mobile/mobile-vocabulary-manager"
@@ -174,7 +174,6 @@ export default function LearningPlatformMobile() {
           </Tabs>
         </main>
 
-        <MobileBottomNav activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
     </>
   )
