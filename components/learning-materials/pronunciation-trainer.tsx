@@ -1,700 +1,1074 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
+import { useState } from "react"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Mic, MicOff, Volume2, Play, Pause, RotateCcw, Target, Award, CheckCircle, XCircle, Search, Filter } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Volume2 } from "lucide-react"
+import { TextToSpeech } from "@/components/ui/text-to-speech"
+import { Repeat } from "lucide-react"
+import { Check } from "lucide-react"
 
-interface Phoneme {
+interface PhonemePractice {
   symbol: string
-  description: string
-  examples: string[]
-  difficulty: "easy" | "medium" | "hard"
-  category: "consonants" | "vowels" | "diphthongs" | "other"
-  audioUrl?: string
+  jaDescription: string
+  practiceWords: string[]
+  practiceSentences: string[]
+  practiceTips?: string
+  category: "vowel" | "diphthong" | "consonant" | "other"
 }
 
-interface Word {
-  word: string
-  pronunciation: string
-  phonemes: string[]
-  difficulty: "beginner" | "intermediate" | "advanced"
-  audioUrl?: string
-}
-
-interface PronunciationScore {
-  overall: number
-  accuracy: number
-  fluency: number
-  intonation: number
-  feedback: string[]
-}
+const PHONEME_PRACTICES: PhonemePractice[] = [
+  {
+    symbol: "/ɪ/",
+    jaDescription: "短い『イ』。日本語の『エ』と『イ』の間の音。口をあまり開けない。",
+    practiceWords: ["city", "it", "busy", "system", "women", "business", "build"],
+    practiceSentences: [
+      "This is a big city.",
+      "I think he's busy.",
+      "Women in business are building systems."
+    ],
+    practiceTips: "『エ』で言い過ぎないよう、リラックスした音を意識する",
+    category: "vowel"
+  },
+  {
+    symbol: "/iː/",
+    jaDescription: "長い『イー』。日本語の『イ』より口が横に引っ張られる。",
+    practiceWords: ["green", "meet", "beach", "see", "team", "teacher"],
+    practiceSentences: [
+      "I can see the green trees.",
+      "The teacher will meet the team.",
+      "We reached the beach by three."
+    ],
+    category: "vowel"
+  },
+  {
+    symbol: "/æ/",
+    jaDescription: "エとアの間。口を大きく横に開く『ア』の音。",
+    practiceWords: ["cat", "man", "bad", "happy", "travel", "pattern"],
+    practiceSentences: [
+      "The cat sat on the mat.",
+      "A happy man travels fast.",
+      "That's a bad pattern."
+    ],
+    practiceTips: "M, N, Gの前では /e/ に変化することがある (hand→/hend/, family→/femɪli/, can→/ken/) ",
+    category: "vowel"
+  },
+  {
+    symbol: "/ɑ/",
+    jaDescription: "口を大きく開けた『ア』。日本語の『オ』ではなく、大きく口を開けた『ア』。",
+    practiceWords: ["body", "box", "follow", "god", "hot", "job", "watch", "wash"],
+    practiceSentences: [
+      "John's job involves watching the clock.",
+      "The hot coffee was in a small box.",
+      "Follow the doctor's advice about your body."
+    ],
+    category: "vowel"
+  },
+  {
+    symbol: "/ɔː/",
+    jaDescription: "オー音。アメリカ英語では /ɑ/ と同じ音になる地域が多い。Rが続く場合はしっかり『オー』音。",
+    practiceWords: ["call", "all", "talk", "walk", "small", "ball", "door", "four", "more"],
+    practiceSentences: [
+      "Call me when you walk to the mall.",
+      "We talked about the small ball.",
+      "All the students walked to the hall."
+    ],
+    category: "vowel"
+  },
+  {
+    symbol: "/e/",
+    jaDescription: "エ。日本語の『エ』より若干横に大きく口を開く。",
+    practiceWords: ["get", "pen", "red", "men", "desk", "send"],
+    practiceSentences: [
+      "Get the red pen from the desk.",
+      "Ten men sent letters.",
+      "When did you get the message?"
+    ],
+    category: "vowel"
+  },
+  {
+    symbol: "/ə/ (または /ʌ/)",
+    jaDescription: "曖昧母音。最も重要な母音。弱い音節で使われる。弱く読む部分はこの音になることが多い。",
+    practiceWords: ["about", "from", "want", "butter", "number", "under"],
+    practiceSentences: [
+      "I want to talk about the number.",
+      "The butter is under the cover.",
+      "Come from another country."
+    ],
+    category: "vowel"
+  },
+  {
+    symbol: "/ʊ/",
+    jaDescription: "短い『ウ』。『ウ』と『オ』の間のリラックスした音。",
+    practiceWords: ["book", "good", "could", "should", "look", "put"],
+    practiceSentences: [
+      "I could look at the good book.",
+      "You should put it where you could look.",
+      "The cook took a good look."
+    ],
+    category: "vowel"
+  },
+  {
+    symbol: "/uː/",
+    jaDescription: "長い『ウー』。唇をすぼめ、舌を後ろに引く緊張感のある音。",
+    practiceWords: ["do", "you", "new", "blue", "food", "school"],
+    practiceSentences: [
+      "You can do it at the new school.",
+      "The blue food looks good to you.",
+      "Who knew you could move so smoothly?"
+    ],
+    practiceTips: "『ドー』よりも『ドゥー』と徐々に唇をすぼめる",
+    category: "vowel"
+  },
+  {
+    symbol: "/ər/",
+    jaDescription: "アメリカのR音。舌を後ろに引き、喉の方に意識を向ける。",
+    practiceWords: ["her", "first", "bird", "work", "turn", "learn"],
+    practiceSentences: [
+      "Her first word was 'bird.'",
+      "We learned to work hard.",
+      "Turn left at the third corner."
+    ],
+    practiceTips: "自分のベロで窒息させようとする感覚で舌を後ろに",
+    category: "vowel"
+  },
+  {
+    symbol: "/ɒ/",
+    jaDescription: "短い『オ』。イギリス英語でよく使われる。口を丸く開ける。アメリカ英語では /ɑ/ で代用されることが多い。",
+    practiceWords: ["hot", "not", "dog", "clock", "cot"],
+    practiceSentences: [
+      "The dog is not hot.",
+      "Check the clock on the wall.",
+      "He got a lot of hot dogs."
+    ],
+    category: "vowel"
+  },
+  {
+    symbol: "/ɜː/",
+    jaDescription: "長い曖昧母音。舌を中央に置き、口をあまり動かさない。アメリカ英語では /ɜr/（/ɝ/）で表される。",
+    practiceWords: ["bird", "girl", "word", "learn", "her"],
+    practiceSentences: [
+      "The bird learned a word.",
+      "Her girl heard the word.",
+      "Learn the first word."
+    ],
+    category: "vowel"
+  },
+  // --- 二重母音 ---
+  {
+    symbol: "/eɪ/",
+    jaDescription: "エイ。『エ』が長く『イ』に滑る。",
+    practiceWords: ["day", "make", "take", "wait", "great", "eight"],
+    practiceSentences: [
+      "Wait for me to make the cake.",
+      "Take the train on a great day.",
+      "Eight students came late today."
+    ],
+    category: "diphthong"
+  },
+  {
+    symbol: "/aɪ/",
+    jaDescription: "アイ。『ア』が長く『イ』に滑る。",
+    practiceWords: ["I", "my", "right", "time", "drive", "night"],
+    practiceSentences: [
+      "I drive at night time.",
+      "My right eye is fine.",
+      "Try to arrive on time."
+    ],
+    category: "diphthong"
+  },
+  {
+    symbol: "/ɔɪ/",
+    jaDescription: "オイ。『オ』が長く『イ』に滑る。",
+    practiceWords: ["boy", "toy", "enjoy", "voice", "choice", "point"],
+    practiceSentences: [
+      "The boy enjoys his new toy.",
+      "Make your choice with your voice.",
+      "Point to the boy's toy."
+    ],
+    category: "diphthong"
+  },
+  {
+    symbol: "/aʊ/",
+    jaDescription: "アウ。『ア』が長く『ウ』に滑る。",
+    practiceWords: ["now", "how", "out", "about", "down", "sound"],
+    practiceSentences: [
+      "How about now?",
+      "Go out and look down.",
+      "The sound is loud."
+    ],
+    category: "diphthong"
+  },
+  {
+    symbol: "/əʊ/",
+    jaDescription: "オウ。『オ』が長く『ウ』に滑る。アメリカ英語では /oʊ/。",
+    practiceWords: ["go", "no", "home", "open", "show", "boat"],
+    practiceSentences: [
+      "Go home now.",
+      "Show me the boat.",
+      "Open the door slowly."
+    ],
+    category: "diphthong"
+  },
+  {
+    symbol: "/ɪə/",
+    jaDescription: "イア。イギリス英語でよく使われる。アメリカ英語では /ɪr/。",
+    practiceWords: ["here", "ear", "near", "clear", "idea"],
+    practiceSentences: [
+      "Come here near the ear.",
+      "The idea is clear.",
+      "She is near here."
+    ],
+    category: "diphthong"
+  },
+  {
+    symbol: "/eə/",
+    jaDescription: "エア。イギリス英語でよく使われる。アメリカ英語では /er/。",
+    practiceWords: ["air", "care", "pair", "hair", "bear"],
+    practiceSentences: [
+      "The air is clear.",
+      "Take care of your hair.",
+      "A pair of bears."
+    ],
+    category: "diphthong"
+  },
+  {
+    symbol: "/ʊə/",
+    jaDescription: "ウア。イギリス英語でよく使われる。アメリカ英語では /ʊr/。",
+    practiceWords: ["tour", "sure", "pure", "cure", "secure"],
+    practiceSentences: [
+      "The tour is sure to cure.",
+      "A pure and secure tour.",
+      "Are you sure of the cure?"
+    ],
+    category: "diphthong"
+  },
+  // --- 子音 ---
+  { symbol: "/p/", jaDescription: "無声音の『プ』。唇を閉じて一気に開放する。", practiceWords: ["pen", "apple", "happy", "cup", "paper"], practiceSentences: ["Put the pen on the paper.", "The apple is in the cup.", "She is a happy person."], category: "consonant" },
+  { symbol: "/b/", jaDescription: "有声音の『ブ』。唇を閉じて一気に開放し、声帯を震わせる。", practiceWords: ["book", "baby", "job", "cab", "about"], practiceSentences: ["The baby has a book.", "He got a new job.", "Put it in the cab."], category: "consonant" },
+  { symbol: "/t/", jaDescription: "無声音の『ト』。舌先を上の歯茎につけて一気に離す。", practiceWords: ["top", "time", "water", "cat", "letter"], practiceSentences: ["The cat is on top.", "Take your time.", "Drink some water."], category: "consonant" },
+  { symbol: "/d/", jaDescription: "有声音の『ド』。舌先を上の歯茎につけて一気に離し、声帯を震わせる。", practiceWords: ["dog", "day", "red", "bed", "idea"], practiceSentences: ["The dog is in the bed.", "It's a red day.", "I have an idea."], category: "consonant" },
+  { symbol: "/k/", jaDescription: "無声音の『ク』。舌の後ろを上あごにつけて一気に離す。", practiceWords: ["cat", "key", "back", "cake", "school"], practiceSentences: ["The cat has a key.", "Go back to school.", "Eat the cake."], category: "consonant" },
+  { symbol: "/g/", jaDescription: "有声音の『グ』。舌の後ろを上あごにつけて一気に離し、声帯を震わせる。", practiceWords: ["go", "get", "big", "bag", "green"], practiceSentences: ["Go get the bag.", "The big bag is green.", "Get a big green bag."], category: "consonant" },
+  { symbol: "/f/", jaDescription: "無声音の『フ』。上の歯を下唇に軽く当てて息を出す。", practiceWords: ["fish", "coffee", "life", "off", "leaf"], practiceSentences: ["The fish is in the coffee.", "Life is short.", "Turn off the light."], category: "consonant" },
+  { symbol: "/v/", jaDescription: "有声音の『ヴ』。上の歯を下唇に軽く当てて声を出す。", practiceWords: ["very", "voice", "love", "move", "leave"], practiceSentences: ["I love your voice.", "Move very fast.", "Leave it here."], category: "consonant" },
+  { symbol: "/θ/", jaDescription: "無声音の『ス』。舌先を上の歯に軽く当てて息を出す。", practiceWords: ["think", "bath", "both", "mouth", "thank"], practiceSentences: ["Think about the bath.", "Thank you both.", "Open your mouth."], category: "consonant" },
+  { symbol: "/ð/", jaDescription: "有声音の『ズ』。舌先を上の歯に軽く当てて声を出す。", practiceWords: ["this", "that", "mother", "brother", "other"], practiceSentences: ["This is my mother.", "That is my brother.", "The other is this."], category: "consonant" },
+  { symbol: "/s/", jaDescription: "無声音の『ス』。舌先を上の歯茎に近づけて息を出す。", practiceWords: ["see", "bus", "glass", "sister", "face"], practiceSentences: ["See the bus.", "The glass is clean.", "My sister has a face."], category: "consonant" },
+  { symbol: "/z/", jaDescription: "有声音の『ズ』。舌先を上の歯茎に近づけて声を出す。", practiceWords: ["zoo", "zero", "music", "nose", "busy"], practiceSentences: ["Go to the zoo.", "The music is zero.", "My nose is busy."], category: "consonant" },
+  { symbol: "/ʃ/", jaDescription: "無声音の『シュ』。舌を少し丸めて息を出す。", practiceWords: ["she", "shop", "fish", "wash", "shoe"], practiceSentences: ["She will shop.", "Wash the fish.", "Put on your shoe."], category: "consonant" },
+  { symbol: "/ʒ/", jaDescription: "有声音の『ジュ』。舌を少し丸めて声を出す。", practiceWords: ["measure", "vision", "beige", "genre", "usual"], practiceSentences: ["Measure the vision.", "The genre is beige.", "It's the usual measure."], category: "consonant" },
+  { symbol: "/h/", jaDescription: "無声音の『ハ』。息を強く出す。", practiceWords: ["he", "hi", "house", "ahead", "hope"], practiceSentences: ["He is in the house.", "Say hi ahead.", "Hope for the best."], category: "consonant" },
+  { symbol: "/tʃ/", jaDescription: "無声音の『チ』。舌先を上の歯茎につけて一気に離す。", practiceWords: ["check", "church", "match", "watch", "teacher"], practiceSentences: ["Check the match.", "The church has a teacher.", "Watch the match."], category: "consonant" },
+  { symbol: "/dʒ/", jaDescription: "有声音の『ヂ』。舌先を上の歯茎につけて一気に離し、声帯を震わせる。", practiceWords: ["job", "jungle", "age", "large", "judge"], practiceSentences: ["The job is large.", "Judge the age.", "Go to the jungle."], category: "consonant" },
+  { symbol: "/m/", jaDescription: "有声音の『ム』。唇を閉じて鼻から声を出す。", practiceWords: ["man", "time", "home", "summer", "room"], practiceSentences: ["The man is at home.", "It's summer time.", "Clean the room."], category: "consonant" },
+  { symbol: "/n/", jaDescription: "有声音の『ン』。舌先を上の歯茎につけて鼻から声を出す。", practiceWords: ["no", "nine", "name", "ten", "dinner"], practiceSentences: ["No name for dinner.", "Nine and ten.", "Say no to dinner."], category: "consonant" },
+  { symbol: "/ŋ/", jaDescription: "有声音の『ング』。舌の後ろを上あごにつけて鼻から声を出す。", practiceWords: ["sing", "long", "song", "king", "ring"], practiceSentences: ["Sing a song.", "The king has a ring.", "It's a long song."], category: "consonant" },
+  { symbol: "/l/", jaDescription: "有声音の『ル』。舌先を上の歯茎につけて声を出す。", practiceWords: ["let", "little", "love", "light", "yellow"], practiceSentences: ["Let the light in.", "A little love.", "The yellow light."], category: "consonant" },
+  { symbol: "/r/", jaDescription: "有声音の『ラ』。舌を丸めて後ろに引く。アメリカ英語特有のR音。", practiceWords: ["red", "right", "read", "around", "car"], practiceSentences: ["Read the red car.", "Turn right around.", "The car is red."], category: "consonant" },
+  { symbol: "/j/", jaDescription: "有声音の『イ』。舌を上あごに近づけて声を出す。", practiceWords: ["yes", "yellow", "yesterday", "young", "beyond"], practiceSentences: ["Yes, it's yellow.", "Yesterday was young.", "Go beyond yesterday."], category: "consonant" },
+  { symbol: "/w/", jaDescription: "有声音の『ワ』。唇を丸めて声を出す。", practiceWords: ["we", "wait", "window", "water", "away"], practiceSentences: ["We wait by the window.", "Go away with water.", "Wait for the water."], category: "consonant" },
+]
 
 export function PronunciationTrainer() {
-  const [isRecording, setIsRecording] = useState(false)
-  const [currentExercise, setCurrentExercise] = useState<"phonemes" | "words" | "sentences" | "all-phonemes">("phonemes")
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [scores, setScores] = useState<PronunciationScore[]>([])
-  const [showResults, setShowResults] = useState(false)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState<string>("all")
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all")
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
-  const audioChunksRef = useRef<Blob[]>([])
+  const [selectedPhoneme, setSelectedPhoneme] = useState<PhonemePractice | null>(PHONEME_PRACTICES[0])
+  const [showJapanese, setShowJapanese] = useState(true)
+  const [activeTab, setActiveTab] = useState("single")
 
-  // Comprehensive list of all phonemes
-  const allPhonemes: Phoneme[] = [
-    // Consonants
-    { symbol: "/p/", description: "Voiceless bilabial plosive", examples: ["pen", "copy", "happen"], difficulty: "easy", category: "consonants" },
-    { symbol: "/b/", description: "Voiced bilabial plosive", examples: ["bad", "job", "baby"], difficulty: "easy", category: "consonants" },
-    { symbol: "/t/", description: "Voiceless alveolar plosive", examples: ["tea", "native", "bet"], difficulty: "easy", category: "consonants" },
-    { symbol: "/d/", description: "Voiced alveolar plosive", examples: ["day", "ladder", "odd"], difficulty: "easy", category: "consonants" },
-    { symbol: "/k/", description: "Voiceless velar plosive", examples: ["key", "cock", "skin"], difficulty: "easy", category: "consonants" },
-    { symbol: "/g/", description: "Voiced velar plosive", examples: ["get", "gig", "ghost"], difficulty: "easy", category: "consonants" },
-    { symbol: "/f/", description: "Voiceless labiodental fricative", examples: ["fat", "coffee", "rough"], difficulty: "easy", category: "consonants" },
-    { symbol: "/v/", description: "Voiced labiodental fricative", examples: ["view", "heavy", "move"], difficulty: "easy", category: "consonants" },
-    { symbol: "/θ/", description: "Voiceless dental fricative", examples: ["thin", "ether", "bath"], difficulty: "hard", category: "consonants" },
-    { symbol: "/ð/", description: "Voiced dental fricative", examples: ["this", "either", "smooth"], difficulty: "hard", category: "consonants" },
-    { symbol: "/s/", description: "Voiceless alveolar fricative", examples: ["see", "city", "pass"], difficulty: "easy", category: "consonants" },
-    { symbol: "/z/", description: "Voiced alveolar fricative", examples: ["zoo", "easy", "buzz"], difficulty: "easy", category: "consonants" },
-    { symbol: "/ʃ/", description: "Voiceless postalveolar fricative", examples: ["ship", "sure", "nation"], difficulty: "medium", category: "consonants" },
-    { symbol: "/ʒ/", description: "Voiced postalveolar fricative", examples: ["vision", "pleasure", "beige"], difficulty: "hard", category: "consonants" },
-    { symbol: "/h/", description: "Voiceless glottal fricative", examples: ["hot", "ahead", "who"], difficulty: "easy", category: "consonants" },
-    { symbol: "/m/", description: "Bilabial nasal", examples: ["man", "hammer", "sum"], difficulty: "easy", category: "consonants" },
-    { symbol: "/n/", description: "Alveolar nasal", examples: ["no", "tenth", "sun"], difficulty: "easy", category: "consonants" },
-    { symbol: "/ŋ/", description: "Velar nasal", examples: ["ring", "anger", "thanks"], difficulty: "medium", category: "consonants" },
-    { symbol: "/l/", description: "Alveolar lateral approximant", examples: ["left", "bell", "table"], difficulty: "easy", category: "consonants" },
-    { symbol: "/r/", description: "Alveolar approximant", examples: ["right", "sorry", "arrive"], difficulty: "medium", category: "consonants" },
-    { symbol: "/j/", description: "Palatal approximant", examples: ["yes", "use", "beauty"], difficulty: "easy", category: "consonants" },
-    { symbol: "/w/", description: "Labial-velar approximant", examples: ["wet", "one", "when"], difficulty: "easy", category: "consonants" },
-    { symbol: "/tʃ/", description: "Voiceless postalveolar affricate", examples: ["chair", "nature", "teach"], difficulty: "medium", category: "consonants" },
-    { symbol: "/dʒ/", description: "Voiced postalveolar affricate", examples: ["job", "edge", "judge"], difficulty: "medium", category: "consonants" },
+  // All Phonemesタブ用: symbolの重複を除いた最初の出現のみ抽出
+  const uniquePhonemePractices = PHONEME_PRACTICES.filter(
+    (p, i, arr) => arr.findIndex(x => x.symbol === p.symbol) === i
+  )
 
-    // Vowels
-    { symbol: "/iː/", description: "Close front unrounded vowel", examples: ["see", "meet", "feel"], difficulty: "easy", category: "vowels" },
-    { symbol: "/ɪ/", description: "Near-close near-front unrounded vowel", examples: ["sit", "hit", "fish"], difficulty: "medium", category: "vowels" },
-    { symbol: "/e/", description: "Close-mid front unrounded vowel", examples: ["bed", "head", "said"], difficulty: "medium", category: "vowels" },
-    { symbol: "/æ/", description: "Near-open front unrounded vowel", examples: ["cat", "hat", "map"], difficulty: "medium", category: "vowels" },
-    { symbol: "/ɑː/", description: "Open back unrounded vowel", examples: ["father", "start", "hard"], difficulty: "easy", category: "vowels" },
-    { symbol: "/ɒ/", description: "Open back rounded vowel", examples: ["lot", "odd", "wash"], difficulty: "medium", category: "vowels" },
-    { symbol: "/ɔː/", description: "Open-mid back rounded vowel", examples: ["law", "north", "war"], difficulty: "medium", category: "vowels" },
-    { symbol: "/ʊ/", description: "Near-close near-back rounded vowel", examples: ["put", "foot", "good"], difficulty: "medium", category: "vowels" },
-    { symbol: "/uː/", description: "Close back rounded vowel", examples: ["too", "food", "moon"], difficulty: "easy", category: "vowels" },
-    { symbol: "/ʌ/", description: "Open-mid back unrounded vowel", examples: ["cup", "luck", "bus"], difficulty: "medium", category: "vowels" },
-    { symbol: "/ɜː/", description: "Open-mid central unrounded vowel", examples: ["bird", "girl", "work"], difficulty: "hard", category: "vowels" },
-    { symbol: "/ə/", description: "Mid central vowel (schwa)", examples: ["about", "common", "standard"], difficulty: "hard", category: "vowels" },
+  // Add state and handlers for repeat tab at the top of the component
+  const [repeatText, setRepeatText] = useState("");
+  const [repeatCount, setRepeatCount] = useState(5);
+  const [repeatPlay, setRepeatPlay] = useState(false);
+  const [repeatPlayKey, setRepeatPlayKey] = useState(0);
+  // Add state for repeat progress and status
+  const [repeatCurrent, setRepeatCurrent] = useState(0);
+  const [repeatStatus, setRepeatStatus] = useState<'idle' | 'playing' | 'done'>('idle');
 
-    // Diphthongs
-    { symbol: "/eɪ/", description: "Closing diphthong", examples: ["face", "day", "break"], difficulty: "medium", category: "diphthongs" },
-    { symbol: "/aɪ/", description: "Closing diphthong", examples: ["price", "high", "try"], difficulty: "medium", category: "diphthongs" },
-    { symbol: "/ɔɪ/", description: "Closing diphthong", examples: ["boy", "choice", "noise"], difficulty: "medium", category: "diphthongs" },
-    { symbol: "/əʊ/", description: "Closing diphthong", examples: ["goat", "show", "no"], difficulty: "medium", category: "diphthongs" },
-    { symbol: "/aʊ/", description: "Closing diphthong", examples: ["mouth", "now", "how"], difficulty: "medium", category: "diphthongs" },
-    { symbol: "/ɪə/", description: "Centering diphthong", examples: ["near", "here", "weird"], difficulty: "hard", category: "diphthongs" },
-    { symbol: "/eə/", description: "Centering diphthong", examples: ["square", "fair", "various"], difficulty: "hard", category: "diphthongs" },
-    { symbol: "/ʊə/", description: "Centering diphthong", examples: ["poor", "jury", "cure"], difficulty: "hard", category: "diphthongs" },
+  // Update handlers for repeat play/stop/end
+  const handleRepeatPlay = () => {
+    setRepeatCurrent(0);
+    setRepeatStatus('playing');
+    setRepeatPlay(true);
+    setRepeatPlayKey(prev => prev + 1);
+  };
+  const handleRepeatStop = () => {
+    setRepeatStatus('idle');
+    setRepeatPlay(false);
+  };
+  const handleRepeatEnd = () => {
+    setRepeatStatus('done');
+    setRepeatPlay(false);
+  };
+  // TextToSpeechの進捗を受け取るコールバック
+  const handleRepeatProgress = (current: number) => {
+    setRepeatCurrent(current);
+    setRepeatStatus('playing');
+  };
 
-    // Other symbols
-    { symbol: "/ˈ/", description: "Primary stress", examples: ["ˈhappy", "ˈteacher", "ˈstudent"], difficulty: "medium", category: "other" },
-    { symbol: "/ˌ/", description: "Secondary stress", examples: ["ˌunderˈstand", "ˌinterˈnational"], difficulty: "hard", category: "other" },
-    { symbol: "/ː/", description: "Long vowel marker", examples: ["iː", "uː", "ɑː"], difficulty: "easy", category: "other" },
-    { symbol: "/ˈ/", description: "Syllable boundary", examples: ["ˈsyl.la.ble", "ˈpho.ne.mic"], difficulty: "medium", category: "other" }
-  ]
-
-  const phonemes: Phoneme[] = [
-    {
-      symbol: "/θ/",
-      description: "Voiceless dental fricative (th in 'think')",
-      examples: ["think", "three", "bath"],
-      difficulty: "hard",
-      category: "consonants"
-    },
-    {
-      symbol: "/ð/",
-      description: "Voiced dental fricative (th in 'this')",
-      examples: ["this", "that", "father"],
-      difficulty: "hard",
-      category: "consonants"
-    },
-    {
-      symbol: "/æ/",
-      description: "Near-open front unrounded vowel (a in 'cat')",
-      examples: ["cat", "hat", "map"],
-      difficulty: "medium",
-      category: "vowels"
-    },
-    {
-      symbol: "/ʌ/",
-      description: "Open-mid back unrounded vowel (u in 'cup')",
-      examples: ["cup", "luck", "bus"],
-      difficulty: "medium",
-      category: "vowels"
-    },
-    {
-      symbol: "/ɜː/",
-      description: "Open-mid central unrounded vowel (ir in 'bird')",
-      examples: ["bird", "girl", "work"],
-      difficulty: "hard",
-      category: "vowels"
-    }
-  ]
-
-  const words: Word[] = [
-    {
-      word: "sophisticated",
-      pronunciation: "/səˈfɪstɪkeɪtɪd/",
-      phonemes: ["s", "ə", "f", "ɪ", "s", "t", "ɪ", "k", "eɪ", "t", "ɪ", "d"],
-      difficulty: "advanced"
-    },
-    {
-      word: "entrepreneur",
-      pronunciation: "/ˌɒntrəprəˈnɜː/",
-      phonemes: ["ɒ", "n", "t", "r", "ə", "p", "r", "ə", "n", "ɜː"],
-      difficulty: "advanced"
-    },
-    {
-      word: "pronunciation",
-      pronunciation: "/prəˌnʌnsiˈeɪʃən/",
-      phonemes: ["p", "r", "ə", "n", "ʌ", "n", "s", "i", "eɪ", "ʃ", "ən"],
-      difficulty: "intermediate"
-    },
-    {
-      word: "technology",
-      pronunciation: "/tekˈnɒlədʒi/",
-      phonemes: ["t", "e", "k", "n", "ɒ", "l", "ə", "dʒ", "i"],
-      difficulty: "intermediate"
-    },
-    {
-      word: "philosophy",
-      pronunciation: "/fɪˈlɒsəfi/",
-      phonemes: ["f", "ɪ", "l", "ɒ", "s", "ə", "f", "i"],
-      difficulty: "intermediate"
-    },
-    {
-      word: "impenetrable",
-      pronunciation: "/ɪmˈpenɪtrəbəl/",
-      phonemes: ["ɪ", "m", "p", "e", "n", "ɪ", "t", "r", "ə", "b", "əl"],
-      difficulty: "advanced"
-    },
-    {
-      word: "differentiator",
-      pronunciation: "/ˌdɪfəˈrenʃieɪtə/",
-      phonemes: ["d", "ɪ", "f", "ə", "r", "e", "n", "ʃ", "i", "eɪ", "t", "ə"],
-      difficulty: "advanced"
-    },
-    {
-      word: "deliberation",
-      pronunciation: "/dɪˌlɪbəˈreɪʃən/",
-      phonemes: ["d", "ɪ", "l", "ɪ", "b", "ə", "r", "eɪ", "ʃ", "ən"],
-      difficulty: "advanced"
-    }
-  ]
-
-  const sentences = [
-    "The quick brown fox jumps over the lazy dog.",
-    "How much wood would a woodchuck chuck?",
-    "She sells seashells by the seashore.",
-    "Peter Piper picked a peck of pickled peppers."
-  ]
-
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      const mediaRecorder = new MediaRecorder(stream)
-      mediaRecorderRef.current = mediaRecorder
-      audioChunksRef.current = []
-
-      mediaRecorder.ondataavailable = (event) => {
-        audioChunksRef.current.push(event.data)
-      }
-
-      mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' })
-        analyzePronunciation(audioBlob)
-      }
-
-      mediaRecorder.start()
-      setIsRecording(true)
-    } catch (error) {
-      console.error('Error accessing microphone:', error)
-    }
-  }
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop()
-      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop())
-      setIsRecording(false)
-    }
-  }
-
-  const analyzePronunciation = (audioBlob: Blob) => {
-    // Simulate pronunciation analysis
-    setTimeout(() => {
-      const score: PronunciationScore = {
-        overall: Math.floor(Math.random() * 30) + 70, // 70-100
-        accuracy: Math.floor(Math.random() * 30) + 70,
-        fluency: Math.floor(Math.random() * 30) + 70,
-        intonation: Math.floor(Math.random() * 30) + 70,
-        feedback: [
-          "Good pronunciation of the target sound",
-          "Try to hold the vowel sound longer",
-          "Pay attention to stress patterns"
-        ]
-      }
-      
-      setScores([...scores, score])
-      
-      if (currentIndex < getCurrentItems().length - 1) {
-        setCurrentIndex(currentIndex + 1)
-      } else {
-        setShowResults(true)
-      }
-    }, 2000)
-  }
-
-  const getCurrentItems = () => {
-    switch (currentExercise) {
-      case "phonemes":
-        return phonemes
-      case "words":
-        return words
-      case "sentences":
-        return sentences
-      case "all-phonemes":
-        let filteredItems = allPhonemes;
-
-        if (searchTerm) {
-          filteredItems = filteredItems.filter(phoneme =>
-            phoneme.symbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            phoneme.description.toLowerCase().includes(searchTerm.toLowerCase())
-          );
-        }
-
-        if (selectedCategory !== "all") {
-          filteredItems = filteredItems.filter(phoneme => phoneme.category === selectedCategory);
-        }
-
-        if (selectedDifficulty !== "all") {
-          filteredItems = filteredItems.filter(phoneme => phoneme.difficulty === selectedDifficulty);
-        }
-
-        return filteredItems;
-      default:
-        return phonemes
-    }
-  }
-
-  const getCurrentItem = () => {
-    const items = getCurrentItems()
-    return items[currentIndex]
-  }
-
-  const playAudio = () => {
-    setIsPlaying(true)
-    // Simulate audio playback
-    setTimeout(() => setIsPlaying(false), 2000)
-  }
-
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case "easy":
-      case "beginner":
-        return "bg-green-100 text-green-800 border-green-200"
-      case "medium":
-      case "intermediate":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200"
-      case "hard":
-      case "advanced":
-        return "bg-red-100 text-red-800 border-red-200"
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200"
-    }
-  }
-
-  const calculateAverageScore = () => {
-    if (scores.length === 0) return 0
-    const total = scores.reduce((sum, score) => sum + score.overall, 0)
-    return Math.round(total / scores.length)
-  }
-
-  const resetExercise = () => {
-    setCurrentIndex(0)
-    setScores([])
-    setShowResults(false)
-    setSearchTerm("")
-    setSelectedCategory("all")
-    setSelectedDifficulty("all")
-  }
+  // Update setRepeatText to reset status
+  const handleSetRepeatText = (text: string) => {
+    setRepeatText(text);
+    if (repeatStatus !== 'playing') setRepeatStatus('idle');
+  };
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Mic className="w-5 h-5" />
-            <span>Pronunciation Trainer</span>
+            <Volume2 className="w-5 h-5" />
+            <span>アメリカ英語発音記号別 練習例文集</span>
           </CardTitle>
           <CardDescription>
-            Practice pronunciation with phonemes, words, and sentences using voice recognition
+            発音記号ごとに日本語の特徴説明・練習単語・例文・ポイントを表示します
           </CardDescription>
         </CardHeader>
         <CardContent>
-                      <Tabs value={currentExercise} onValueChange={(value) => {
-              setCurrentExercise(value as "phonemes" | "words" | "sentences" | "all-phonemes")
-              setCurrentIndex(0)
-              setScores([])
-              setShowResults(false)
-              if (value === "all-phonemes") {
-                setSearchTerm("")
-                setSelectedCategory("all")
-                setSelectedDifficulty("all")
-              }
-            }}>
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="phonemes">Phonemes</TabsTrigger>
-              <TabsTrigger value="words">Words</TabsTrigger>
-              <TabsTrigger value="sentences">Sentences</TabsTrigger>
-              <TabsTrigger value="all-phonemes">All Phonemes</TabsTrigger>
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="mb-4">
+              <TabsTrigger value="single">個別表示</TabsTrigger>
+              <TabsTrigger value="all">All Phonemes</TabsTrigger>
+              <TabsTrigger value="list">発音記号一覧</TabsTrigger>
+              <TabsTrigger value="guide">練習ガイド</TabsTrigger>
+              <TabsTrigger value="repeat">反復練習</TabsTrigger>
             </TabsList>
+            <TabsContent value="single">
+              <div className="mb-4 flex flex-wrap gap-2">
+                {PHONEME_PRACTICES.map((p) => (
+                  <Button
+                    key={p.symbol}
+                    variant={selectedPhoneme?.symbol === p.symbol ? "default" : "outline"}
+                    onClick={() => setSelectedPhoneme(p)}
+                    className="text-base px-3 py-1"
+                  >
+                    {p.symbol}
+                  </Button>
+                ))}
+              </div>
+              {selectedPhoneme && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <Badge variant="outline" className="text-base px-2 py-1">
+                      {selectedPhoneme.symbol}
+                    </Badge>
+                    <span className="text-sm text-slate-600">{selectedPhoneme.category === "vowel" ? "母音" : selectedPhoneme.category === "diphthong" ? "二重母音" : selectedPhoneme.category === "consonant" ? "子音" : "その他"}</span>
+                    <Button size="sm" variant="ghost" onClick={() => setShowJapanese((v) => !v)}>
+                      {showJapanese ? "日本語非表示" : "日本語表示"}
+                    </Button>
+                  </div>
+                  {showJapanese && (
+                    <div className="text-slate-800 text-base font-medium mb-2">{selectedPhoneme.jaDescription}</div>
+                  )}
+                  <div>
+                    <div className="font-semibold text-slate-700 mb-1">練習単語</div>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedPhoneme.practiceWords.map((w, i) => (
+                        <span key={i} className="bg-blue-50 text-blue-800 rounded px-2 py-1 text-sm border border-blue-200">{w}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-slate-700 mb-1">練習例文</div>
+                    <ul className="list-disc ml-6 space-y-1">
+                      {selectedPhoneme.practiceSentences.map((s, i) => (
+                        <li key={i} className="text-base text-slate-900">{s}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  {selectedPhoneme.practiceTips && (
+                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 text-yellow-900 text-sm rounded">
+                      <span className="font-semibold">練習のポイント: </span>{selectedPhoneme.practiceTips}
+                    </div>
+                  )}
+                </div>
+              )}
+            </TabsContent>
+            <TabsContent value="all">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {uniquePhonemePractices.map((p) => (
+                  <Card key={p.symbol} className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge variant="outline" className="text-base px-2 py-1">{p.symbol}</Badge>
+                      <span className="text-xs text-slate-600">{p.category === "vowel" ? "母音" : p.category === "diphthong" ? "二重母音" : p.category === "consonant" ? "子音" : "その他"}</span>
+                    </div>
+                    <div className="text-slate-800 text-base font-medium mb-2">{p.jaDescription}</div>
+                    <div className="mb-2">
+                      <div className="font-semibold text-slate-700 mb-1">練習単語</div>
+                      <div className="flex flex-wrap gap-2">
+                        {p.practiceWords.map((w, i) => (
+                          <span key={i} className="bg-blue-50 text-blue-800 rounded px-2 py-1 text-sm border border-blue-200">{w}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="mb-2">
+                      <div className="font-semibold text-slate-700 mb-1">練習例文</div>
+                      <ul className="list-disc ml-6 space-y-1">
+                        {p.practiceSentences.map((s, i) => (
+                          <li key={i} className="text-base text-slate-900">{s}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    {p.practiceTips && (
+                      <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 text-yellow-900 text-sm rounded">
+                        <span className="font-semibold">練習のポイント: </span>{p.practiceTips}
+                      </div>
+                    )}
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="list">
+              <div className="space-y-8">
+                {/* 母音 */}
+                <div>
+                  <div className="font-bold text-lg mb-2">母音 (Vowels)</div>
+                  <table className="w-full border text-sm">
+                    <thead>
+                      <tr className="bg-slate-100">
+                        <th className="border px-2 py-1">記号</th>
+                        <th className="border px-2 py-1">日本語説明</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {uniquePhonemePractices.filter(p => p.category === "vowel").map((p) => (
+                        <tr key={p.symbol}>
+                          <td className="border px-2 py-1 text-center font-mono">{p.symbol}</td>
+                          <td className="border px-2 py-1">{p.jaDescription}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {/* 二重母音 */}
+                <div>
+                  <div className="font-bold text-lg mb-2">二重母音 (Diphthongs)</div>
+                  <table className="w-full border text-sm">
+                    <thead>
+                      <tr className="bg-slate-100">
+                        <th className="border px-2 py-1">記号</th>
+                        <th className="border px-2 py-1">日本語説明</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {uniquePhonemePractices.filter(p => p.category === "diphthong").map((p) => (
+                        <tr key={p.symbol}>
+                          <td className="border px-2 py-1 text-center font-mono">{p.symbol}</td>
+                          <td className="border px-2 py-1">{p.jaDescription}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {/* 子音 */}
+                <div>
+                  <div className="font-bold text-lg mb-2">子音 (Consonants)</div>
+                  <table className="w-full border text-sm">
+                    <thead>
+                      <tr className="bg-slate-100">
+                        <th className="border px-2 py-1">記号</th>
+                        <th className="border px-2 py-1">日本語説明</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {uniquePhonemePractices.filter(p => p.category === "consonant").map((p) => (
+                        <tr key={p.symbol}>
+                          <td className="border px-2 py-1 text-center font-mono">{p.symbol}</td>
+                          <td className="border px-2 py-1">{p.jaDescription}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="guide">
+              <div className="space-y-8">
+                {/* 母音セクション */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>母音の練習</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* /ɪ/ */}
+                    <div>
+                      <div className="font-bold">/ɪ/ (短い「イ」)</div>
+                      <div className="text-sm text-slate-700 mb-1">特徴: 日本語の「エ」と「イ」の間の音。口をあまり開けない。</div>
+                      <div className="mb-1">練習単語: <span className="font-mono">city, it, busy, system, women, business, build</span></div>
+                      <div className="mb-1">練習例文:</div>
+                      <ul className="list-disc ml-6 text-sm">
+                        <li>This is a big city.</li>
+                        <li>I think he's busy.</li>
+                        <li>Women in business are building systems.</li>
+                      </ul>
+                      <div className="text-xs text-slate-600">練習のポイント: 「エ」で言い過ぎないよう、リラックスした音を意識する</div>
+                    </div>
+                    {/* /iː/ */}
+                    <div>
+                      <div className="font-bold">/iː/ (長い「イー」)</div>
+                      <div className="text-sm text-slate-700 mb-1">特徴: 日本語の「イ」より口が横に引っ張られる</div>
+                      <div className="mb-1">練習単語: <span className="font-mono">green, meet, beach, see, team, teacher</span></div>
+                      <div className="mb-1">練習例文:</div>
+                      <ul className="list-disc ml-6 text-sm">
+                        <li>I can see the green trees.</li>
+                        <li>The teacher will meet the team.</li>
+                        <li>We reached the beach by three.</li>
+                      </ul>
+                    </div>
+                    {/* /æ/ */}
+                    <div>
+                      <div className="font-bold">/æ/ (エとアの間)</div>
+                      <div className="text-sm text-slate-700 mb-1">特徴: 口を大きく横に開く「ア」の音</div>
+                      <div className="mb-1">練習単語: <span className="font-mono">cat, man, bad, happy, travel, pattern</span></div>
+                      <div className="mb-1">練習例文:</div>
+                      <ul className="list-disc ml-6 text-sm">
+                        <li>The cat sat on the mat.</li>
+                        <li>A happy man travels fast.</li>
+                        <li>That's a bad pattern.</li>
+                      </ul>
+                      <div className="text-xs text-slate-600">注意: M, N, Gの前では /e/ に変化することがある hand → /hend/ family → /femɪli/ can → /ken/</div>
+                    </div>
+                    {/* /ɑ/ */}
+                    <div>
+                      <div className="font-bold">/ɑ/ (口を大きく開けた「ア」)</div>
+                      <div className="text-sm text-slate-700 mb-1">特徴: 日本語の「オ」ではなく、大きく口を開けた「ア」</div>
+                      <div className="mb-1">練習単語: <span className="font-mono">body, box, follow, god, hot, job, watch, wash</span></div>
+                      <div className="mb-1">練習例文:</div>
+                      <ul className="list-disc ml-6 text-sm">
+                        <li>John's job involves watching the clock.</li>
+                        <li>The hot coffee was in a small box.</li>
+                        <li>Follow the doctor's advice about your body.</li>
+                      </ul>
+                    </div>
+                    {/* /ɔː/ */}
+                    <div>
+                      <div className="font-bold">/ɔː/ (オー音)</div>
+                      <div className="text-sm text-slate-700 mb-1">特徴: アメリカ英語では /ɑ/ と同じ音になる地域が多い</div>
+                      <div className="mb-1">練習単語: <span className="font-mono">call, all, talk, walk, small, ball</span></div>
+                      <div className="mb-1">練習例文:</div>
+                      <ul className="list-disc ml-6 text-sm">
+                        <li>Call me when you walk to the mall.</li>
+                        <li>We talked about the small ball.</li>
+                        <li>All the students walked to the hall.</li>
+                      </ul>
+                      <div className="text-xs text-slate-600">注意: Rが続く場合はしっかり「オー」音 door, four, more</div>
+                    </div>
+                    {/* /e/ */}
+                    <div>
+                      <div className="font-bold">/e/ (エ)</div>
+                      <div className="text-sm text-slate-700 mb-1">特徴: 日本語の「エ」より若干横に大きく口を開く</div>
+                      <div className="mb-1">練習単語: <span className="font-mono">get, pen, red, men, desk, send</span></div>
+                      <div className="mb-1">練習例文:</div>
+                      <ul className="list-disc ml-6 text-sm">
+                        <li>Get the red pen from the desk.</li>
+                        <li>Ten men sent letters.</li>
+                        <li>When did you get the message?</li>
+                      </ul>
+                    </div>
+                    {/* /ə/ */}
+                    <div>
+                      <div className="font-bold">/ə/ (/ʌ/) (曖昧母音)</div>
+                      <div className="text-sm text-slate-700 mb-1">特徴: 最も重要な母音。弱い音節で使われる</div>
+                      <div className="mb-1">練習単語: <span className="font-mono">about, from, want, butter, number, under</span></div>
+                      <div className="mb-1">練習例文:</div>
+                      <ul className="list-disc ml-6 text-sm">
+                        <li>I want to talk about the number.</li>
+                        <li>The butter is under the cover.</li>
+                        <li>Come from another country.</li>
+                      </ul>
+                      <div className="text-xs text-slate-600">重要: 弱く読む部分はこの音になることが多い</div>
+                    </div>
+                    {/* /ʊ/ */}
+                    <div>
+                      <div className="font-bold">/ʊ/ (短い「ウ」)</div>
+                      <div className="text-sm text-slate-700 mb-1">特徴: 「ウ」と「オ」の間のリラックスした音</div>
+                      <div className="mb-1">練習単語: <span className="font-mono">book, good, could, should, look, put</span></div>
+                      <div className="mb-1">練習例文:</div>
+                      <ul className="list-disc ml-6 text-sm">
+                        <li>I could look at the good book.</li>
+                        <li>You should put it where you could look.</li>
+                        <li>The cook took a good look.</li>
+                      </ul>
+                    </div>
+                    {/* /uː/ */}
+                    <div>
+                      <div className="font-bold">/uː/ (長い「ウー」)</div>
+                      <div className="text-sm text-slate-700 mb-1">特徴: 唇をすぼめ、舌を後ろに引く緊張感のある音</div>
+                      <div className="mb-1">練習方法: 徐々に唇をすぼめる: ドー → ドゥー → ドゥゥー / うううう → ずーーーー（徐々に唇を丸らせていく） / do: ドゥーーーーウ（二重母音的に移動）</div>
+                      <div className="mb-1">練習単語: <span className="font-mono">do, you, new, blue, food, school</span></div>
+                      <div className="mb-1">練習例文:</div>
+                      <ul className="list-disc ml-6 text-sm">
+                        <li>You can do it at the new school.</li>
+                        <li>The blue food looks good to you.</li>
+                        <li>Who knew you could move so smoothly?</li>
+                      </ul>
+                    </div>
+                    {/* /ər/ */}
+                    <div>
+                      <div className="font-bold">/ər/ (アメリカのR音)</div>
+                      <div className="text-sm text-slate-700 mb-1">特徴: 舌を後ろに引き、喉の方に意識を向ける</div>
+                      <div className="mb-1">練習方法: 自分のベロで窒息させる感覚: 舌を後ろに引く圧力 / very: ベーーーーリー（ベーと言いながら舌をたたたたたの位置へ） / 最初に「あー」: あーーーファースト / 舌先はどこにもつけない、舌の横はべったり口の中についてもOK</div>
+                      <div className="mb-1">練習単語: <span className="font-mono">her, first, bird, work, turn, learn</span></div>
+                      <div className="mb-1">練習例文:</div>
+                      <ul className="list-disc ml-6 text-sm">
+                        <li>Her first word was "bird."</li>
+                        <li>We learned to work hard.</li>
+                        <li>Turn left at the third corner.</li>
+                      </ul>
+                    </div>
+                  </CardContent>
+                </Card>
+                {/* 特別な練習法セクション */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>特別な練習法</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <div className="font-bold">強弱リズムの練習切り替え</div>
+                      <div className="text-sm">1音節: to, get, cake, man, card, she</div>
+                      <div className="text-sm">2音節: about → a-BOUT（ほとんど囁くぐらい弱く + 強く）/ accept → ac-CEPT / expect → ex-PECT</div>
+                      <div className="text-sm">3音節: fantastic → fan-TAS-tic（最初と最後をほとんど囁く）/ punishment → PUN-ish-ment</div>
+                      <div className="text-xs text-slate-600">練習方法: パンチを打つような感覚で強弱の差を激しくつける</div>
+                    </div>
+                    <div>
+                      <div className="font-bold">母音挿入防止の練習切り替え</div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>up → アップ（×） / アッ（○）</li>
+                          <li>that → ザット（×） / ザッ（○）</li>
+                          <li>make → メイク（×） / メイッ（○）</li>
+                          <li>time → タイム（×） / タイッ（○）</li>
+                          <li>job → ジョブ（×） / ジョッ（○）優しく終わる</li>
+                        </ul>
+                      </div>
+                      <div className="text-xs text-slate-600">練習のコツ: 母音は長く伸ばしてもOK、でも子音の後に母音を入れない</div>
+                    </div>
+                    <div>
+                      <div className="font-bold">気音化の練習切り替え</div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>P音: pen → ペンッ（息が漏れる）/ spin → スピン（息が漏れない、ほぼB音）</li>
+                          <li>T音: top → トップッ（息が漏れる）/ stop → ストップ（息が漏れない、ほぼD音）</li>
+                          <li>K音: key → キーッ（息が漏れる）/ ski → スキー（息が漏れない、ほぼG音）</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-bold">弱形練習の切り替え</div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>can: 強形: I CAN go（アイ キャン ゴー）/ 弱形: I c'n go（アイ クン ゴー）</li>
+                          <li>you: 強形: YOU are（ユー アー）/ 弱形: Y'r（ヤー）</li>
+                          <li>he/him/his:
+                            <ul>
+                              <li>I think he can do it → I think 'e c'n do it</li>
+                              <li>Give him the book → Give 'im the book</li>
+                              <li>This is his car → This is 'is car</li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                {/* 二重母音セクション */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>二重母音の練習</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <div className="font-bold">/eɪ/ (エイ)</div>
+                      <div className="text-sm text-slate-700 mb-1">特徴: 「エ」が長く、「イ」は短く</div>
+                      <div className="mb-1">練習単語: <span className="font-mono">day, make, take, wait, great, eight</span></div>
+                      <div className="mb-1">練習例文:</div>
+                      <ul className="list-disc ml-6 text-sm">
+                        <li>Wait for me to make the cake.</li>
+                        <li>Take the train on a great day.</li>
+                        <li>Eight students came late today.</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <div className="font-bold">/aɪ/ (アイ)</div>
+                      <div className="text-sm text-slate-700 mb-1">特徴: 「ア」が長く、「イ」は短く</div>
+                      <div className="mb-1">練習単語: <span className="font-mono">I, my, right, time, drive, night</span></div>
+                      <div className="mb-1">練習例文:</div>
+                      <ul className="list-disc ml-6 text-sm">
+                        <li>I drive at night time.</li>
+                        <li>My right eye is fine.</li>
+                        <li>Try to arrive on time.</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <div className="font-bold">/ɔɪ/ (オイ)</div>
+                      <div className="text-sm text-slate-700 mb-1">特徴: 「オ」が長く、「イ」は短く</div>
+                      <div className="mb-1">練習単語: <span className="font-mono">boy, toy, enjoy, voice, choice, point</span></div>
+                      <div className="mb-1">練習例文:</div>
+                      <ul className="list-disc ml-6 text-sm">
+                        <li>The boy enjoys his new toy.</li>
+                        <li>Make your choice with your voice.</li>
+                        <li>Point to your favorite toy.</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <div className="font-bold">/oʊ/ (オウ)</div>
+                      <div className="text-sm text-slate-700 mb-1">特徴: 唇を動かして音を変化させる</div>
+                      <div className="mb-1">練習方法: 唇の動きを意識: おおおお → うううう / 脳: のーーーーうーーー（音を移動させる） / ノー、ソー、オンリー、オーバー（すべて唇を動かして）</div>
+                      <div className="mb-1">練習単語: <span className="font-mono">go, no, phone, home, slow, show</span></div>
+                      <div className="mb-1">練習例文:</div>
+                      <ul className="list-disc ml-6 text-sm">
+                        <li>Go home and phone me.</li>
+                        <li>Show me the slow motion.</li>
+                        <li>No one knows the code.</li>
+                      </ul>
+                      <div className="text-xs text-slate-600">注意: 日本語の「オ」で終わらず、「ウ」に向かって音を移動させる</div>
+                    </div>
+                    <div>
+                      <div className="font-bold">/aʊ/ (アウ)</div>
+                      <div className="text-sm text-slate-700 mb-1">特徴: 「ア」が長く、「ウ」は短く</div>
+                      <div className="mb-1">練習単語: <span className="font-mono">how, now, house, about, sound, found</span></div>
+                      <div className="mb-1">練習例文:</div>
+                      <ul className="list-disc ml-6 text-sm">
+                        <li>How about going to my house now?</li>
+                        <li>The sound was found downtown.</li>
+                        <li>Thousands of people came out.</li>
+                      </ul>
+                    </div>
+                  </CardContent>
+                </Card>
+                {/* 子音セクション */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>子音の練習</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <div className="font-bold">R と L</div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>R音: 舌がどこにもつかない</li>
+                          <li>L音: 舌先が歯の裏につく</li>
+                        </ul>
+                      </div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>R音の練習切り替え: たたたたた...rrrrr（舌を徐々に上に反らせて、どこにもつかなくなるポイントを見つける）</li>
+                          <li>たたたたた → らららら → rrrrr</li>
+                          <li>後ろから前に: たたたたたたた</li>
+                        </ul>
+                      </div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>L音の練習: らららら → lllll（舌先を歯の裏にしっかりつける）</li>
+                        </ul>
+                      </div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>練習対比: right/light, road/load, rice/lice, really, world, girl, travel, problem</li>
+                        </ul>
+                      </div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>練習例文: The right light is really bright. / Rice and lice are totally different. / Travel around the world carefully.</li>
+                        </ul>
+                      </div>
+                      <div className="text-xs text-slate-600">語尾のL: school, bell, pool, people<br />The school bell rang for all people.<br />スクール（ウに近い音で舌は歯の裏に向かう感覚）</div>
+                    </div>
+                    <div>
+                      <div className="font-bold">F と V</div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>F音: 歯と唇の摩擦音（息のみ）</li>
+                          <li>V音: 歯と唇の摩擦音＋喉の振動</li>
+                        </ul>
+                      </div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>練習切り替え: fff...vvv...fff...vvv（基本切り替え）</li>
+                          <li>ffffファイン → vvvvバイン</li>
+                          <li>ffffフード → vvvvヴューティフル</li>
+                        </ul>
+                      </div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>練習単語: fine/vine, fan/van, safe/save, very, have, love, believe</li>
+                        </ul>
+                      </div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>練習例文: I have a very fine voice. / Save the file on your favorite device. / We believe in five values.</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-bold">TH音</div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>無声TH /θ/: thing, think, three</li>
+                          <li>有声TH /ð/: this, that, the</li>
+                        </ul>
+                      </div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>練習方法: 歯と歯の隙間に舌を近づけて空気を通す</li>
+                          <li>練習切り替え: θθθ...ððð...θθθ...ððð</li>
+                          <li>θθθシンク → ðððディス</li>
+                          <li>θθθシング → ðððザット</li>
+                        </ul>
+                      </div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>練習例文: I think this thing is thick. / The three brothers came together. / That's the thing I was thinking about.</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-bold">「ず」と「づ」の区別</div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>S系の音 /z/: cards, roads, dogs</li>
+                          <li>T系の音 /dʒ/: change, choose, just</li>
+                        </ul>
+                      </div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>練習切り替え: zzz...dʒdʒdʒ...zzz...dʒdʒdʒ</li>
+                          <li>zzzカーズ → dʒdʒdʒチェンジ</li>
+                          <li>zzzローズ → dʒdʒdʒジャッジ</li>
+                        </ul>
+                      </div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>練習例文: Choose the right cards. / Just change the subject. / These dogs need changes.</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-bold">H と W</div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>H音: 窓ガラスに息を吹きかける感じ</li>
+                          <li>W音: 唇を強くすぼめて戻す</li>
+                        </ul>
+                      </div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>H音の練習切り替え: 日本語のハヒフヘホ → 英語のハヒフヘホ</li>
+                          <li>日本語: ひひひ（ベロの根元の摩擦が強い）</li>
+                          <li>英語: hhhhヘッド（窓ガラスに息を吹きかける）</li>
+                          <li>息をめちゃくちゃ使う: ハヒフヘホ</li>
+                        </ul>
+                      </div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>W音の練習: 唇の先端に意識: うううう → wwww</li>
+                          <li>うワーン（唇をすぼめた状態から戻ってくる）</li>
+                          <li>work: ウワーク（唇をとにかくすぼめて）</li>
+                        </ul>
+                      </div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>練習単語: H: he, head, house, have, help / W: we, work, would, one, way</li>
+                        </ul>
+                      </div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>練習例文: We would help him with his work. / He went to his house one way. / What would you have for lunch?</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                {/* 音声変化セクション */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>音声変化の例文</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div>
+                      <div className="font-bold">リンキング</div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>I like it → I li-ket</li>
+                          <li>When I → Whe-nI</li>
+                          <li>Come on → Co-mon</li>
+                          <li>Turn it off → Tur-ni-toff</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-bold">弱形</div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>I can go → I c'n go</li>
+                          <li>You are → You're / Y'r</li>
+                          <li>He is → He's / E's</li>
+                          <li>Do you → D'you / D'ya</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-bold">省略</div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>Must be → Mus' be</li>
+                          <li>Next door → Nex' door</li>
+                          <li>Asked him → Ask'd him</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                {/* 総合練習例文セクション */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>総合練習例文</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div>
+                      <div className="font-bold">基本文</div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>"I have a dream." - キング牧師<br />強弱: I HAVE a DREAM<br />弱形活用</li>
+                          <li>"You can't connect the dots." - スティーブ・ジョブス<br />音声変化: can't + connect</li>
+                          <li>"We all need people who give us feedback." - ビル・ゲイツ<br />強弱とイントネーション練習</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-bold">日常会話</div>
+                      <div className="text-sm">
+                        <ul>
+                          <li>What's the weather like today?</li>
+                          <li>I think we should go to the store.</li>
+                          <li>Could you help me with this problem?</li>
+                          <li>I'm really excited about the new project.</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                {/* 練習のポイントセクション */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>練習のポイント</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ol className="list-decimal ml-6 space-y-1 text-sm">
+                      <li><b>強弱リズム</b>: 大事な単語を強く、機能語は弱く</li>
+                      <li><b>母音挿入禁止</b>: 子音で終わる単語に母音を入れない</li>
+                      <li><b>音の連結</b>: 単語間の境界を意識せずスムーズに</li>
+                      <li><b>感情を込める</b>: イントネーションで意味を変える</li>
+                      <li><b>反復練習</b>: 同じ音を繰り返し練習してマッスルメモリーを作る</li>
+                    </ol>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+            <TabsContent value="repeat">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Repeat className="w-5 h-5" />
+                    <span>反復練習: 同じ音を繰り返し練習してマッスルメモリーを作る</span>
+                  </CardTitle>
+                  <CardDescription>
+                    発音記号・単語・例文を選んで、音声で繰り返し練習しましょう。
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Phoneme selection */}
+                  <div className="mb-2 flex flex-wrap gap-2">
+                    {uniquePhonemePractices.map((p) => (
+                      <Button
+                        key={p.symbol}
+                        variant={selectedPhoneme?.symbol === p.symbol ? "default" : "outline"}
+                        onClick={() => setSelectedPhoneme(p)}
+                        className="text-base px-3 py-1"
+                      >
+                        {p.symbol}
+                      </Button>
+                    ))}
+                  </div>
+                  {selectedPhoneme && (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-base px-2 py-1">{selectedPhoneme.symbol}</Badge>
+                        <span className="text-sm text-slate-600">{selectedPhoneme.category === "vowel" ? "母音" : selectedPhoneme.category === "diphthong" ? "二重母音" : selectedPhoneme.category === "consonant" ? "子音" : "その他"}</span>
+                      </div>
+                      <div className="text-slate-800 text-base font-medium mb-2">{selectedPhoneme.jaDescription}</div>
+                      {/* Show selected text */}
+                      {repeatText && (
+                        <div className="flex items-center gap-2 p-2 bg-blue-50 border border-blue-200 rounded">
+                          <span className="font-semibold text-blue-700">選択中:</span>
+                          <span className="text-base text-blue-900 font-mono">{repeatText}</span>
+                        </div>
+                      )}
+                      {/* Word/Sentence selection */}
+                      <div>
+                        <div className="font-semibold text-slate-700 mb-1">練習単語</div>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedPhoneme.practiceWords.map((w, i) => (
+                            <Button key={i} variant={repeatText === w ? "default" : "secondary"} size="sm" onClick={() => handleSetRepeatText(w)} className="flex items-center gap-1">
+                              {repeatText === w && <Check className="w-4 h-4 text-green-600" />}
+                              {w}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="font-semibold text-slate-700 mb-1">練習例文</div>
+                        <div className="flex flex-col gap-2">
+                          {selectedPhoneme.practiceSentences.map((s, i) => (
+                            <Button key={i} variant={repeatText === s ? "default" : "outline"} size="sm" onClick={() => handleSetRepeatText(s)} className="flex items-center gap-1">
+                              {repeatText === s && <Check className="w-4 h-4 text-green-600" />}
+                              {s}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                      {/* Repeat controls and status */}
+                      <div className="flex flex-col gap-2 mt-2">
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm">繰り返し回数:</span>
+                          <input type="number" min={1} max={20} value={repeatCount} onChange={e => setRepeatCount(Number(e.target.value))} className="w-16 border rounded px-2 py-1 text-sm" />
+                          <span className="text-sm text-slate-600">進捗: {repeatStatus === 'playing' ? `${repeatCurrent + 1}/${repeatCount}` : repeatStatus === 'done' ? `${repeatCount}/${repeatCount}` : `0/${repeatCount}`}</span>
+                        </div>
+                        {/* Progress bar */}
+                        <div className="w-full h-2 bg-slate-200 rounded">
+                          <div className={`h-2 rounded bg-blue-500 transition-all`} style={{ width: `${((repeatStatus === 'done' ? repeatCount : repeatCurrent + (repeatStatus === 'playing' ? 1 : 0)) / repeatCount) * 100}%` }} />
+                        </div>
+                        {/* Status label */}
+                        <div className="flex items-center gap-2 mt-1">
+                          {repeatStatus === 'playing' && <span className="text-green-600 font-semibold">再生中...</span>}
+                          {repeatStatus === 'idle' && <span className="text-slate-500">停止中</span>}
+                          {repeatStatus === 'done' && <span className="text-blue-700 font-semibold">完了！</span>}
+                        </div>
+                        {/* Play/Stop buttons */}
+                        <div className="flex gap-2 mt-1">
+                          <Button onClick={handleRepeatPlay} disabled={!repeatText || repeatStatus === 'playing'} className="flex items-center gap-1"><Repeat className="w-4 h-4" />{repeatStatus === 'playing' ? '再生中...' : '再生'}</Button>
+                          <Button variant="outline" onClick={handleRepeatStop} disabled={repeatStatus !== 'playing'}>停止</Button>
+                        </div>
+                      </div>
+                      {/* TextToSpeech for repeated playback */}
+                      <div className="mt-2">
+                        <TextToSpeech key={repeatText + repeatCount + repeatPlayKey} text={repeatText} repeat={repeatCount} play={repeatPlay} onEnd={handleRepeatEnd} onProgress={handleRepeatProgress} />
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
           </Tabs>
         </CardContent>
       </Card>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          {!showResults ? (
-            <Card>
-        <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>
-                    {currentExercise === "phonemes" && "Phoneme Practice"}
-                    {currentExercise === "words" && "Word Pronunciation"}
-                    {currentExercise === "sentences" && "Sentence Practice"}
-                    {currentExercise === "all-phonemes" && "All Phonemes"}
-                  </CardTitle>
-                  <div className="flex items-center space-x-2">
-                    {currentExercise !== "all-phonemes" && (
-                      <>
-                        <span className="text-sm text-slate-600">
-                          {currentIndex + 1} of {getCurrentItems().length}
-                        </span>
-                        <Progress 
-                          value={((currentIndex + 1) / getCurrentItems().length) * 100} 
-                          className="w-24"
-                        />
-                      </>
-                    )}
-                    {currentExercise === "all-phonemes" && (
-                      <span className="text-sm text-slate-600">
-                        {getCurrentItems().length} phonemes found
-                      </span>
-                    )}
-                  </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-                {currentExercise === "phonemes" && (
-                  <div className="text-center space-y-4">
-                    <div className="text-6xl font-bold text-blue-600">
-                      {getCurrentItem().symbol}
-                    </div>
-                    <p className="text-lg text-slate-700">{getCurrentItem().description}</p>
-                    <div className="flex flex-wrap justify-center gap-2">
-                      {getCurrentItem().examples.map((example, index) => (
-                        <Badge key={index} variant="outline">
-                          {example}
-                        </Badge>
-                      ))}
-                    </div>
-                    <Badge className={getDifficultyColor(getCurrentItem().difficulty)}>
-                      {getCurrentItem().difficulty}
-                    </Badge>
-                  </div>
-                )}
-
-                {currentExercise === "words" && (
-                  <div className="text-center space-y-4">
-                    <div className="text-4xl font-bold text-blue-600">
-                      {getCurrentItem().word}
-                    </div>
-                    <div className="text-2xl text-slate-600 font-mono">
-                      {getCurrentItem().pronunciation}
-                    </div>
-                    <div className="flex flex-wrap justify-center gap-1">
-                      {getCurrentItem().phonemes.map((phoneme, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
-                          {phoneme}
-                        </Badge>
-                      ))}
-                    </div>
-                    <Badge className={getDifficultyColor(getCurrentItem().difficulty)}>
-                      {getCurrentItem().difficulty}
-                    </Badge>
-                  </div>
-                )}
-
-                {currentExercise === "sentences" && (
-                  <div className="text-center space-y-4">
-                    <div className="text-xl font-medium text-slate-800 leading-relaxed">
-                      "{getCurrentItem()}"
-                    </div>
-                    <p className="text-sm text-slate-600">
-                      Focus on clear pronunciation and natural rhythm
-                    </p>
-                  </div>
-                )}
-
-                {currentExercise === "all-phonemes" && (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-                        <Input
-                          placeholder="Search phonemes..."
-                          className="pl-10"
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                      </div>
-                      <Select onValueChange={setSelectedCategory} defaultValue="all">
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="Filter by Category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Categories</SelectItem>
-                          <SelectItem value="consonants">Consonants</SelectItem>
-                          <SelectItem value="vowels">Vowels</SelectItem>
-                          <SelectItem value="diphthongs">Diphthongs</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Select onValueChange={setSelectedDifficulty} defaultValue="all">
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="Filter by Difficulty" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Difficulties</SelectItem>
-                          <SelectItem value="easy">Easy</SelectItem>
-                          <SelectItem value="medium">Medium</SelectItem>
-                          <SelectItem value="hard">Hard</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {getCurrentItems().map((phoneme, index) => (
-                        <Card key={index} className="p-4 flex items-center justify-between">
-                          <div>
-                            <Badge variant="outline" className="text-xs">{phoneme.category}</Badge>
-                            <div className="text-lg font-mono">{phoneme.symbol}</div>
-                            <p className="text-sm text-slate-700">{phoneme.description}</p>
-                            <div className="flex flex-wrap gap-1 mt-2">
-                              {phoneme.examples.map((example, exIndex) => (
-                                <Badge key={exIndex} variant="outline" className="text-xs">{example}</Badge>
-                              ))}
-                            </div>
-                          </div>
-                          <Badge className={getDifficultyColor(phoneme.difficulty)}>{phoneme.difficulty}</Badge>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {currentExercise !== "all-phonemes" && (
-                  <>
-          <div className="flex justify-center space-x-4">
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        onClick={playAudio}
-                        disabled={isPlaying}
-                      >
-                        {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                        <span className="ml-2">Listen</span>
-            </Button>
-
-            <Button
-              size="lg"
-                        onClick={isRecording ? stopRecording : startRecording}
-              className={isRecording ? "bg-red-600 hover:bg-red-700" : ""}
-            >
-                        {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-                        <span className="ml-2">
-                          {isRecording ? "Stop Recording" : "Start Recording"}
-                        </span>
-            </Button>
-          </div>
-
-          {isRecording && (
-                      <div className="text-center">
-                        <div className="animate-pulse text-red-600 font-medium">
-                          Recording... Speak now!
-                        </div>
-            </div>
-          )}
-                  </>
-                )}
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Award className="w-5 h-5" />
-                  <span>Practice Results</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                  <div className="text-center">
-                  <div className="text-4xl font-bold text-blue-600 mb-2">
-                    {calculateAverageScore()}%
-                  </div>
-                  <p className="text-slate-600">
-                    Overall pronunciation score
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {scores.map((score, index) => (
-                    <Card key={index} className="p-4">
-                      <div className="text-center space-y-2">
-                        <div className="text-2xl font-bold text-green-600">
-                          {score.overall}%
-                        </div>
-                    <div className="text-sm text-slate-600">
-                          {currentExercise === "phonemes" && `Phoneme ${index + 1}`}
-                          {currentExercise === "words" && `Word ${index + 1}`}
-                          {currentExercise === "sentences" && `Sentence ${index + 1}`}
-                          {currentExercise === "all-phonemes" && `Phoneme ${index + 1}`}
-                        </div>
-                        <div className="space-y-1">
-                          <div className="flex justify-between text-xs">
-                            <span>Accuracy</span>
-                            <span>{score.accuracy}%</span>
-                          </div>
-                          <Progress value={score.accuracy} className="h-1" />
-                        </div>
-                        <div className="space-y-1">
-                          <div className="flex justify-between text-xs">
-                            <span>Fluency</span>
-                            <span>{score.fluency}%</span>
-                          </div>
-                          <Progress value={score.fluency} className="h-1" />
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-
-                <div className="space-y-3">
-                  <h4 className="font-medium">Feedback</h4>
-                  {scores[0]?.feedback.map((feedback, index) => (
-                    <div key={index} className="flex items-start space-x-2 p-3 bg-slate-50 rounded-lg">
-                      <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
-                      <span className="text-sm text-slate-700">{feedback}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <Button 
-                  className="w-full" 
-                  onClick={resetExercise}
-                >
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Practice Again
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-
-        <div className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Target className="w-4 h-4" />
-                <span>Pronunciation Goals</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span>Daily Practice</span>
-                  <span>12/15 min</span>
-                </div>
-                <Progress value={80} className="h-2" />
-              </div>
-              
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span>Weekly Accuracy</span>
-                  <span>87%</span>
-                </div>
-                <Progress value={87} className="h-2" />
-              </div>
-
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span>Phonemes Mastered</span>
-                  <span>24/44</span>
-                </div>
-                <Progress value={55} className="h-2" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Common Phonemes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {phonemes.slice(0, 3).map((phoneme, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 bg-slate-50 rounded">
-                    <span className="font-mono text-lg">{phoneme.symbol}</span>
-                    <Badge className={getDifficultyColor(phoneme.difficulty)}>
-                      {phoneme.difficulty}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Tips for Better Pronunciation</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-start space-x-2">
-                <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
-                <p className="text-sm text-slate-700">
-                  Record yourself and compare with native speakers
-                </p>
-              </div>
-              <div className="flex items-start space-x-2">
-                <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
-                <p className="text-sm text-slate-700">
-                  Practice in front of a mirror to see mouth movements
-                </p>
-              </div>
-              <div className="flex items-start space-x-2">
-                <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
-                <p className="text-sm text-slate-700">
-                  Focus on stress patterns and intonation
-                </p>
-          </div>
-        </CardContent>
-      </Card>
-        </div>
-      </div>
     </div>
   )
 }

@@ -15,8 +15,20 @@ interface Voice {
   voiceURI: string
 }
 
-export function TextToSpeech() {
-  const [text, setText] = useState("")
+export function TextToSpeech({
+  text: propText,
+  repeat = 1,
+  play = false,
+  onEnd,
+  onProgress,
+}: {
+  text?: string
+  repeat?: number
+  play?: boolean
+  onEnd?: () => void
+  onProgress?: (current: number) => void
+} = {}) {
+  const [text, setText] = useState(propText ?? "")
   const [isPlaying, setIsPlaying] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
   const [voices, setVoices] = useState<Voice[]>([])
@@ -26,37 +38,108 @@ export function TextToSpeech() {
   const [volume, setVolume] = useState([1])
   const [isMuted, setIsMuted] = useState(false)
   const [currentWord, setCurrentWord] = useState("")
-  const [wordBoundaries, setWordBoundaries] = useState<number[]>([])
+  const [repeatIndex, setRepeatIndex] = useState(0)
+  const [externalPlay, setExternalPlay] = useState(false)
 
   const speechRef = useRef<SpeechSynthesisUtterance | null>(null)
   const synthesisRef = useRef<SpeechSynthesis | null>(null)
+  const isControlled = propText !== undefined
 
+  // 既存のuseEffect（Web Speech APIの初期化とvoiceリスト取得）を修正
   useEffect(() => {
-    // Web Speech APIの初期化
     if ('speechSynthesis' in window) {
       synthesisRef.current = window.speechSynthesis
-      
-      // 音声の読み込み
       const loadVoices = () => {
         const availableVoices = synthesisRef.current?.getVoices() || []
         setVoices(availableVoices)
-        
         // デフォルトで日本語または英語の音声を選択
-        const defaultVoice = availableVoices.find(voice => 
-          voice.lang.startsWith('ja') || voice.lang.startsWith('en')
-        )
-        if (defaultVoice) {
-          setSelectedVoice(defaultVoice.voiceURI)
+        if (!selectedVoice && availableVoices.length > 0) {
+          const defaultVoice = availableVoices.find(voice =>
+            voice.lang.startsWith('ja') || voice.lang.startsWith('en')
+          ) || availableVoices[0]
+          if (defaultVoice) {
+            setSelectedVoice(defaultVoice.voiceURI)
+          }
         }
       }
-
-      // 音声が利用可能になったら読み込み
       if (synthesisRef.current.onvoiceschanged !== undefined) {
         synthesisRef.current.onvoiceschanged = loadVoices
       }
       loadVoices()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // controlled再生時、voicesやselectedVoiceが未セットなら再生を遅延
+  useEffect(() => {
+    if (isControlled && play && propText) {
+      if (!voices.length || !selectedVoice) {
+        // voices/selectedVoiceが揃うまで待つ
+        return
+      }
+      setRepeatIndex(0)
+      setExternalPlay(true)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [play, propText, repeat, voices, selectedVoice])
+
+  // 外部制御の繰り返し再生
+  useEffect(() => {
+    if (externalPlay && isControlled && propText) {
+      if (repeatIndex < repeat) {
+        if (onProgress) onProgress(repeatIndex);
+        speakControlled()
+      } else {
+        setExternalPlay(false)
+        setRepeatIndex(0)
+        if (onEnd) onEnd()
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [externalPlay, repeatIndex])
+
+  // Add effect to stop speech when play becomes false in controlled mode
+  useEffect(() => {
+    if (isControlled && !play) {
+      stop();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [play]);
+
+  // 外部制御用のspeak
+  const speakControlled = () => {
+    if (!synthesisRef.current || !propText.trim()) return
+    if (!voices.length || !selectedVoice) return // voices/voice未セットなら再生しない
+    stop()
+    const utterance = new SpeechSynthesisUtterance(propText)
+    speechRef.current = utterance
+    const voice = voices.find(v => v.voiceURI === selectedVoice)
+    if (voice) utterance.voice = voice
+    utterance.rate = rate[0]
+    utterance.pitch = pitch[0]
+    utterance.volume = isMuted ? 0 : volume[0]
+    utterance.onstart = () => {
+      setIsPlaying(true)
+      setIsPaused(false)
+    }
+    utterance.onend = () => {
+      setIsPlaying(false)
+      setIsPaused(false)
+      setCurrentWord("")
+      setRepeatIndex(idx => idx + 1)
+    }
+    utterance.onpause = () => setIsPaused(true)
+    utterance.onresume = () => setIsPaused(false)
+    utterance.onboundary = (event) => {
+      if (event.name === 'word') {
+        const wordStart = event.charIndex
+        const wordEnd = propText.indexOf(' ', wordStart)
+        const word = propText.substring(wordStart, wordEnd === -1 ? propText.length : wordEnd)
+        setCurrentWord(word)
+      }
+    }
+    synthesisRef.current.speak(utterance)
+  }
 
   const speak = () => {
     if (!synthesisRef.current || !text.trim()) return
@@ -182,29 +265,31 @@ export function TextToSpeech() {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* テキスト入力 */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Text Input</label>
-            <Textarea
-              placeholder="Enter text you want to read aloud..."
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              className="min-h-[120px]"
-            />
-            
-            {/* サンプルテキスト */}
-            <div className="flex flex-wrap gap-2">
-              {sampleTexts.map((sample, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setText(sample)}
-                >
-                  Sample {index + 1}
-                </Button>
-              ))}
+          {!isControlled && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Text Input</label>
+              <Textarea
+                placeholder="Enter text you want to read aloud..."
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                className="min-h-[120px]"
+              />
+              
+              {/* サンプルテキスト */}
+              <div className="flex flex-wrap gap-2">
+                {sampleTexts.map((sample, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setText(sample)}
+                  >
+                    Sample {index + 1}
+                  </Button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* 音声設定 */}
           <div className="space-y-4">
@@ -278,50 +363,52 @@ export function TextToSpeech() {
           </div>
 
           {/* コントロールボタン */}
-          <div className="flex flex-wrap gap-2">
-            <Button
-              onClick={isPlaying && !isPaused ? pause : isPaused ? resume : speak}
-              disabled={!text.trim()}
-              className="flex items-center space-x-2"
-            >
-              {isPlaying && !isPaused ? (
-                <Pause className="w-4 h-4" />
-              ) : (
-                <Play className="w-4 h-4" />
-              )}
-              <span>
-                {isPlaying && !isPaused ? "Pause" : isPaused ? "Resume" : "Start Reading"}
-              </span>
-            </Button>
+          {!isControlled && (
+            <div className="flex flex-wrap gap-2">
+              <Button
+                onClick={isPlaying && !isPaused ? pause : isPaused ? resume : speak}
+                disabled={!text.trim()}
+                className="flex items-center space-x-2"
+              >
+                {isPlaying && !isPaused ? (
+                  <Pause className="w-4 h-4" />
+                ) : (
+                  <Play className="w-4 h-4" />
+                )}
+                <span>
+                  {isPlaying && !isPaused ? "Pause" : isPaused ? "Resume" : "Start Reading"}
+                </span>
+              </Button>
 
-            <Button
-              variant="outline"
-              onClick={stop}
-              disabled={!isPlaying}
-              className="flex items-center space-x-2"
-            >
-              <RotateCcw className="w-4 h-4" />
-              <span>Stop</span>
-            </Button>
+              <Button
+                variant="outline"
+                onClick={stop}
+                disabled={!isPlaying}
+                className="flex items-center space-x-2"
+              >
+                <RotateCcw className="w-4 h-4" />
+                <span>Stop</span>
+              </Button>
 
-            <Button
-              variant="outline"
-              onClick={toggleMute}
-              className="flex items-center space-x-2"
-            >
-              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-              <span>{isMuted ? "Unmute" : "Mute"}</span>
-            </Button>
+              <Button
+                variant="outline"
+                onClick={toggleMute}
+                className="flex items-center space-x-2"
+              >
+                {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                <span>{isMuted ? "Unmute" : "Mute"}</span>
+              </Button>
 
-            <Button
-              variant="outline"
-              onClick={downloadAudio}
-              className="flex items-center space-x-2"
-            >
-              <Download className="w-4 h-4" />
-              <span>Download</span>
-            </Button>
-          </div>
+              <Button
+                variant="outline"
+                onClick={downloadAudio}
+                className="flex items-center space-x-2"
+              >
+                <Download className="w-4 h-4" />
+                <span>Download</span>
+              </Button>
+            </div>
+          )}
 
           {/* 現在読み上げ中の単語 */}
           {currentWord && (
